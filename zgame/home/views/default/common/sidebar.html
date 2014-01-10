@@ -1,0 +1,238 @@
+<div>
+	<{if  in_array("00100000",$user.code)}>
+		<h1 class="type"><a href="javascript:void(0)">充值相关查询</a></h1>
+		<div class="content">
+			<div class="topline">
+				<img src="<{$res}>/images/menu_topline.gif" width="182" height="5" />
+			</div>
+			<ul class="subMenu">
+				<{if  in_array("00100100",$user.code)}>
+					<li id="account"><a href="<{$app}>/rechargequery/show" onclick="return false;">玩家充值查询</a></li>
+				<{/if}>
+				<{if  in_array("00100200",$user.code)}>
+					<li id="account"><a href="<{$app}>/jishiquery/show" onclick="return false;">充值即时查询</a></li>
+				<{/if}>
+				<{if  in_array("00100300",$user.code)}>
+					<li id="accountstat"><a href="<{$app}>/rechargestat/show" onclick="return false;">充值统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00100400",$user.code)}>
+					<li id="accconcom"><a href="<{$app}>/rechargeduibi/show" onclick="return false;">充值对比</a></li>
+				<{/if}>
+				
+				<{if  in_array("00100500",$user.code)}>
+					<li id="accdis"><a href="<{$app}>/rechargefengbu/show" onclick="return false;">充值分布</a></li>
+				<{/if}>
+				<{if  in_array("00100600",$user.code)}>
+					<li id="accport"><a href="<{$app}>/rechargeport/show" onclick="return false;">充值接口</a></li>
+				<{/if}>
+			</ul>
+		</div>
+	<{/if}>
+	
+	<{if  in_array("00200000",$user.code)}>
+		<h1 class="type"><a href="javascript:void(0)">货币相关查询</a></h1>
+		<div class="content">
+			<div class="topline">
+				<img src="<{$res}>/images/menu_topline.gif" width="182" height="5" />
+			</div>
+			<ul class="subMenu">
+				<{if  in_array("00200100",$user.code)}>
+					<li id="monout"><a href="<{$app}>/shopconsume/show" onclick="return false;">玩家商城消费记录</a></li>
+				<{/if}>
+				
+				<{if  in_array("00200200",$user.code)}>
+					<li id="monpay"><a href="<{$app}>/shopanalysis/show" onclick="return false;">商城消费统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00200300",$user.code)}>
+					<li id="goldout"><a href="<{$app}>/moneysurvey/show" onclick="return false;">货币收支概况</a></li>
+				<{/if}>
+								
+				<{if  in_array("00200400",$user.code)}>
+					<li id="goldpay"><a href="<{$app}>/residualvalue/show" onclick="return false;">剩余价值统计</a>	</li>
+				<{/if}>
+			</ul>
+		 </div>
+	 <{/if}>
+	 
+	 
+	<{if  in_array("00300000",$user.code)}>
+		<h1 class="type"><a href="javascript:void(0)">玩家数据查询</a></h1>
+		<div class="content">
+			<div class="topline">
+				<img src="<{$res}>/images/menu_topline.gif" width="182" height="5" />
+			</div>
+			<ul class="subMenu">
+				<{if  in_array("00300100",$user.code)}>
+					<li id="infoquery"><a href="<{$app}>/gminfo/show" onclick="return false;">用户查询</a></li>
+				<{/if}>
+				
+				<{if  in_array("00300200",$user.code)}><!--原留存分析-->
+					<li id="keep"><a href="<{$app}>/useronline/show" onclick="return false;">玩家在线信息</a></li>
+				<{/if}>
+				
+				<{if  in_array("00300300",$user.code)}>
+					<li id="sin"><a href="<{$app}>/singsevrak/show"  onclick="return false;">玩家充值排行</a></li>
+				<{/if}>
+				
+				<{if  in_array("00300400",$user.code)}>
+					<li id="sin"><a href="<{$app}>/singsevact/show"  onclick="return false;">玩家单服活跃统计</a></li>
+				<{/if}>
+				
+			</ul>
+		</div>
+	<{/if}>
+
+	<{if  in_array("00400000",$user.code)}>
+		<h1 class="type"><a href="javascript:void(0)">游戏数据统计</a></h1>
+		<div class="content" >
+			<div class="topline">
+				<img src="<{$res}>/images/menu_topline.gif" width="182" height="5" />
+			</div>
+			<ul class="subMenu">
+				<{if  in_array("00400101",$user.code)}>
+					<li id="new"><a href="<{$app}>/userrole/shishi"  onclick="return false;">实时查询</a></li>
+				<{/if}>
+				<{if  in_array("00400200",$user.code)}>
+					<li id="login" ><a href="<{$app}>/userlogin/show" onclick="return false;">登录汇总</a></li>
+				<{/if}>
+				
+				<{if  in_array("00400300",$user.code)}>
+					<li id="active"><a href="<{$app}>/userkeepb/show" onclick="return false;">留存分析</a></li><!--原活跃分析-->
+				<{/if}>
+				<!--
+				<{if  in_array("00400300",$user.code)}>
+					<li id="keep"><a href="<{$app}>/userkeep/show" onclick="return false;">留存分析</a></li>
+				<{/if}>
+				-->
+				<{if  in_array("00400400",$user.code)}>
+					<li id="accport"><a href="<{$app}>/recharresult/show" onclick="return false;">渠道数据统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00400500",$user.code)}>
+					<li id="sin"><a href="<{$app}>/singaction/show"  onclick="return false;">单服活动数据分析</a></li>
+				<{/if}>
+				
+				<{if  in_array("00400600",$user.code)}>
+					<li id="pay"><a href="<{$app}>/userpay/show" onclick="return false;">付费分析</a></li>
+				<{/if}>
+				
+				<{if  in_array("00400700",$user.code)}>
+					<li id="role"><a href="<{$app}>/userrole/show"  onclick="return false;">创角统计</a></li>
+				<{/if}>
+				
+				
+			<{if  in_array("00400800",$user.code)}>
+					<li id="new"><a href="<{$app}>/usernew/show"  onclick="return false;">新进数据统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00400900",$user.code)}>
+					<li id="new"><a href="<{$app}>/usercopy/show"  onclick="return false;">副本数据统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00401000",$user.code)}>
+					<li id="hot"><a href="<{$app}>/gmgrow/show" onclick="return false;" target="main">玩家成长日志</a></li>
+				<{/if}>
+				
+				<{if  in_array("00401100",$user.code)}>
+					<li id="action"><a href="<{$app}>/useraction/show"  onclick="return false;">玩家行为数据统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00401200",$user.code)}>
+					<li id="goldpay"><a href="<{$app}>/consumeranalysis/show" onclick="return false;">用户行为消耗统计</a>	</li>
+				<{/if}>
+				
+				<{if  in_array("00401300",$user.code)}>
+					<li id="level"><a href="<{$app}>/userlevel/show"  onclick="return false;">玩家等级分布统计</a></li>
+				<{/if}>
+				
+				<{if  in_array("00401400",$user.code)}>
+					<li id="proppay"><a href="<{$app}>/propanalysis/show" onclick="return false;">道具消耗统计</a>	</li>
+				<{/if}>
+			</ul>
+		</div>
+	<{/if}>
+	
+	
+	
+	
+	 
+    <{if  in_array("00500000",$user.code)}>
+		<h1 class="type"><a href="javascript:void(0)">GM工具</a></h1>
+		<div class="content">
+			<div class="topline">
+				<img src="<{$res}>/images/menu_topline.gif" width="182" height="5" />
+			</div>
+			<ul class="subMenu">
+				
+				<{if  in_array("00500100",$user.code)}>
+					<li id="handle"><a href="<{$app}>/gmoperate/show" onclick="return false;">游戏账号禁封</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500200",$user.code)}>
+					<li id="newmag"><a href="<{$app}>/gmnew/show" onclick="return false;">发送公告</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500300",$user.code)}>
+					<li id="email"><a href="<{$app}>/gmemail/show" onclick="return false;">发送邮件</a></li>
+				<{/if}>
+				<{if  in_array("00500400",$user.code)}>
+					<li id="toolsask"><a href="<{$app}>/gmtoolsask/show" onclick="return false;">道具申请</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500500",$user.code)}>
+					<li id="toolspass"><a href="<{$app}>/gmtoolspass/show" onclick="return false;">道具审批</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500600",$user.code)}>
+					<li id="code"><a href="<{$app}>/code/show" onclick="return false;" target="main">新手卡</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500700",$user.code)}>
+					<li id="delemail"><a href="<{$app}>/gmemail/showdel" onclick="return false;" target="main">删除邮件</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500800",$user.code)}>
+					<li id="double"><a href="<{$app}>/gmdouble/show" onclick="return false;" target="main">多倍经验管理</a></li>
+				<{/if}>
+				
+				<{if  in_array("00500900",$user.code)}>
+					<li id="hot"><a href="<{$app}>/gmstart/show" onclick="return false;" target="main">热启动</a></li>
+				<{/if}>
+				
+				<{if  in_array("00501000",$user.code)}>
+					<li id="hot"><a href="<{$app}>/gmlogin/show" onclick="return false;" target="main">GM操作记录</a></li>
+				<{/if}>
+				
+					<{if  in_array("00501100",$user.code)}>
+					<li id="serverini"><a href="<{$app}>/server/show" onclick="return false;">gm设置</a></li>
+				<{/if}>
+				<{if  in_array("00501200",$user.code)}>
+					<li id="gameini"><a href="<{$app}>/game/show" onclick="return false;">开服设置</a></li>
+				<{/if}>	
+				<{if  in_array("00501300",$user.code)}>
+					<li id="usermang"><a href="<{$app}>/system/show" onclick="return false;">权限管理</a></li>
+				<{/if}>
+				<{if  in_array("00501400",$user.code)}>
+				<li id="databak"><a href="<{$app}>/data/show" onclick="return false;">数据备份</a></li>
+				<{/if}>
+				<{if  in_array("00501500",$user.code)}>
+				<li id="databak"><a href="<{$app}>/platformquery/show" onclick="return false;">平台记录</a></li>
+				<{/if}>
+				<{if  in_array("00501600",$user.code)}>
+				<li id="brower"><a href="<{$app}>/brower/show" onclick="return false;">浏览器记录</a></li>
+				<{/if}>
+				<{if  in_array("00501700",$user.code)}>
+				<li id="gold"><a href="<{$app}>/gold/show" onclick="return false;">邮件发元宝</a></li>
+				<{/if}>
+			</ul>
+		</div>
+	<{/if}>
+	
+	
+	
+	<{if  empty($user.code)}>
+		<h1 class="nopage"><a href="javascript:void(0)">没有权限</a></h1>
+	<{/if}>
+</div>

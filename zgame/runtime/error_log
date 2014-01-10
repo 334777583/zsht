@@ -1,0 +1,10 @@
+[02-Jan-2014 02:43:06 UTC] PHP Notice:  Undefined variable: name in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 02:43:06 UTC] PHP Warning:  Invalid argument supplied for foreach() in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 02:43:06 UTC] PHP Notice:  Undefined variable: type in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 39
+[02-Jan-2014 02:44:58 UTC] PHP Notice:  Undefined variable: name in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 02:44:58 UTC] PHP Warning:  Invalid argument supplied for foreach() in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 02:44:58 UTC] PHP Notice:  Undefined variable: type in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 39
+[02-Jan-2014 04:10:27 UTC] PHP Notice:  Undefined variable: name in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 04:10:27 UTC] PHP Warning:  Invalid argument supplied for foreach() in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 33
+[02-Jan-2014 04:10:27 UTC] PHP Notice:  Undefined variable: type in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/propanalysisaction.class.php on line 39
+[06-Jan-2014 10:07:41 UTC] PHP Notice:  Use of undefined constant CURL - assumed 'CURL' in /data0/yanfa/php_home/zhanshen/zgame/runtime/controls/zhanshen_zgame_index_php/gmloginaction.class.php on line 33

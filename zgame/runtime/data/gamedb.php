@@ -1,0 +1,1 @@
+<?php {"pri":"g_id","0":"g_domain","1":"g_ip","2":"g_name","3":"g_flag","4":"g_inserttime"}yes

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户邮件删除</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+	<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	<!--
+	body {
+		margin-left: 0px;
+		margin-top: 0px;
+		margin-right: 0px;
+		margin-bottom: 0px;
+		background-color: #EEF2FB;
+		font-size: 12px;
+	}
+	-->
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、此界面用于删除已发送的全服邮件；</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、删除的全服邮件在玩家登录后不会再收到；</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="topinfo">	
+				<div>
+					<span>服务器:</span>
+					<select id="sip">
+					<{foreach from=$ipList item=ip}>
+						<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+					<{/foreach}>
+					</select>
+					<input type="button" value="查询" id="querybtn"/>
+				</div>
+			</div>
+			
+			<div>
+				<table  class="mytable" cellspacing="0" align="center" id="dtable">
+					<thead>
+						<tr>
+							<th>类型</th>
+							<th>创建时间</th>
+							<th>截止时间</th>
+							<th>标题</th>
+							<th>内容</th>
+							<th>最小等级</th>
+							<th>最大等级</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody id="dtatr_body">
+					</tbody>
+				</table>
+			</div>
+		
+			<div style="clear:both"></div>
+		</div>
+		
+		<!--弹出覆盖层-->
+		<div class="overlay" style="display:none">
+			<table style="width:220px;height:100%;margin:0 auto;">
+				<tr>
+					<td style="text-align:center">
+						<img src='<{$res}>/images/ajax-loader.gif'/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+	</div>
+	
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/function.js" type="text/javascript"></script> 	
+	<script type="text/javascript">
+		var email_del = {
+			INIT : function(){
+				var self = this;
+				showTitle("运营工具:删除邮件");
+				
+				$("#querybtn").click(function(){
+					self.show();
+				})
+				
+				//删除邮件
+				$(".delemail").live('click', function() {
+					var id = $(this).attr('id');
+					self.del(id);
+				})
+			},
+			
+			show : function () {
+				var ip = $("#sip").val();
+				$.ajax({
+					type : 'POST',
+					url : '<{$logicApp}>/gmemail/getEmails',
+					dataType : 'json',
+					data : {
+						ip : ip
+					},
+					beforeSend : function(){
+						$("#dtatr_body").html("<tr><td colspan='8'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+					},
+					success : function (data) {	
+						var result = data.result;
+						var tbody = '';
+						if(typeof(result) != "undefined" && result.length > 0) {
+							for(var i in result) {
+								tbody += "<tr>";
+								tbody += "<td>" + result[i]['type'] + "</td>";
+								tbody += "<td>" + result[i]['createTime'] + "</td>";
+								tbody += "<td>" + result[i]['endTime'] + "</td>";
+								tbody += "<td>" + result[i]['title'] + "</td>";
+								tbody += "<td>" + result[i]['content'] + "</td>";
+								tbody += "<td>" + result[i]['minLv'] + "</td>";
+								tbody += "<td>" + result[i]['maxLv']+ "</td>";
+								tbody += "<td id='"+result[i]['id']+"' class='delemail'><a href='javascript:void(0)'>删除</a></td>";
+								tbody += "</tr>";
+							}
+							$("#dtatr_body").html(tbody);
+						} else {
+							$("#dtatr_body").html("<tr><td colspan='8'>没有数据！</td></tr>");
+						}
+					},
+					error : function () {
+						$("#dtatr_body").html("<tr><td colspan='8'>没有数据！</td></tr>");
+					}
+				})	
+			
+			},
+			
+			del : function(id) {
+				var self = this;
+				var ip = $("#sip").val();
+				$.ajax({
+					type : 'POST',
+					url : '<{$logicApp}>/gmemail/delEmail',
+					dataType : 'json',
+					data : {
+						ip : ip,
+						id : id
+					},
+					beforeSend : function(){
+						$(".overlay").show();
+					},
+					complete : function(){
+						$(".overlay").hide();
+					},
+					success : function (data) {	
+						if(data == "success") {
+							alert("删除成功");
+							self.show();
+						} else {
+							alert("删除全服邮件失败");
+						}
+					},
+					error : function () {
+						alert('error');
+					}
+				})		
+			}
+		}
+		
+		$(document).ready(function(){
+			email_del.INIT();
+		})
+	</script>
+</body>
+</html>

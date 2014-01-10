@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户行为分析</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+	<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	<!--
+	body {
+		margin-left: 0px;
+		margin-top: 0px;
+		margin-right: 0px;
+		margin-bottom: 0px;
+		background-color: #EEF2FB;
+		font-size: 12px;
+	}
+	-->
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft"><a href="javascript:void" style="color:#000" id="ac_exp">行为分析各统计项说明<font color="red">(鼠标放上去查看)</font></a></td>
+						</tr>
+						<tr>
+							<td id="tip" style="display:none">
+								<img src="<{$res}>/images/tip_arrow2.png" class="action_arrow ">
+								<table cellspacing="0" cellpadding="0" class="action_tip">
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>古墓奇缘：</b>
+											<br/>
+											古墓奇缘每人每天平均通关次数=闯皇陵每天总通关次数/该天登陆角色数（全部可进副本都打完算为通关，否则算为不通关）
+											<br/>
+											古墓奇缘每人每天平均重置次数=闯皇陵每天总重置次数/该天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>闯荡江湖：</b>
+											<br/>
+											闯荡江湖每人每天通关次数=剧情副本总通关次数/该天登陆角色数（打完某一副本即为通关一次）
+											<br/>
+											闯荡江湖每人每天平均增加次数=剧情副本每天总重置次数/该天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>扬名立万：</b>
+											<br/>
+											扬名立万每人每天通关次数=独孤求败总通关次数/该天登陆角色数（打完某一副本即为通关一次）
+											<br/>
+											扬名立万每人每天平均增加次数=独孤求败每天总重置次数/该天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>追加：</b>
+											<br/>
+											奇门每人每天洗练次数=奇门每人每天洗练总次数/该天登陆角色数
+											<br/>
+											遁甲每人每天洗练次数=遁甲每人每天洗练总次数/该天登陆角色数
+											<br/>
+											河图每人每天洗炼次数=河图每人每天洗练总次数/该天登陆角色数
+											<br/>
+											洛书每人每天洗练次数=洛书每人每天洗练总次数/该天登陆角色数
+											<br/>
+											<b>套装：</b>
+											<br/>
+											套装技能每人每天洗练次数=套装技能每人每天洗练总次数/该天登陆角色数
+											<br/>
+											<b>奇遇：</b>
+											<br/>
+											每人每天奇遇次数=奇遇总次数/该天登陆的角色数
+											<br/>
+											<b>毒：</b>
+											<br/>
+											人每天上香次数=每天上香总次数/该天登陆角色数
+											<br/>
+											<b>经脉：</b>
+											<br/>
+											每人每天冲脉次数=每天冲脉总次数/该天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>随机日常：</b>
+											<br/>
+											每天每人完成随机日常的个数=每天随机日常完成总个数/每天登陆角色数（完成一个任务算一个，进行中的任务不算）
+											<br/>
+											每人每天随机日常购买次数=随机日常购买总次数/每天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>重复日常：</b>
+											<br/>
+											每天每人完成重复日常的个数=每天重复日常完成总个数/每天登陆角色数（完成一个任务算一个，进行中的任务不算）
+											<br/>
+											每人每天重复日常购买次数=重复日常购买总次数/每天登陆角色数
+										</td>
+									</tr>
+									<tr>
+										<td width="95%" class="tableleft">
+											<b>天上人间：</b>
+											<br/>
+											天上人间每人每天收获次数=天上人间总收获次数/每天登陆角色数
+											<br/>
+											天上人间每人每天推倒次数=天上人间总推倒次数/每天登陆角色数
+											<br/>
+											天上人间每人每天培养次数=天上人间总培养次数/每天登陆角色数
+											<br/>
+											天上人间每人每天刷新次数=天上人间总刷新次数/每天登陆角色数
+											<br/>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="topinfo">	
+				<div>
+					<span>服务器:</span>
+					<select id="sip">
+					<{foreach from=$ipList item=ip}>
+						<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+					<{/foreach}>
+					</select>
+					<span style="margin-left: 20px">日期:</span>
+					<input type="text" id="startdate" class="input1" value="<{$startDate}>"/>至<input type="text" id="enddate" class="input1" value="<{$endDate}>"/>
+					<input type="button" value="查询" id="querybtn"/>
+					<{if  in_array("00100401",$user.code)}>
+						<!--<font color="red" style="margin-left:30px"><b>到</b></font><input type="text" id="todate" class="input1" value="<{$endDate}>"/><font color="red"><b>的数据</b></font>-->
+						<input type="button" value="删除已缓存的数据" id="delbtn"/>
+					<{/if}>
+				</div>
+			</div>
+			
+			<div style="clear:both"></div>
+			
+			<div>
+				<table  class="mytable" cellspacing="0" align="center" id="dtable" style="table-layout:fixed">
+					<thead>
+						<tr>
+							<th rowspan="2">时间</th>
+							<th colspan="6">副本</th>
+							<th colspan="4">追加（洗练）</th>
+							<th colspan="4">其他</th>
+							<th colspan="4">任务</th>
+							<th colspan="4">天上人间</th>
+						</tr>
+						<tr>
+							<th colspan="2">古墓奇缘<br/>（平均通关|平均重置）</th>
+							<th colspan="2">闯荡江湖<br/>（平均通关|平均增加）</th>
+							<th colspan="2">扬名立万<br/>（平均通关|平均增加）</th>
+							<th>奇门</th>
+							<th>遁甲</th>
+							<th>河图</th>
+							<th>洛书</th>
+							<th>套装<br/>（洗练）</th>
+							<th>奇遇</th>
+							<th>毒</th>
+							<th>经脉</th>
+							<th colspan="2">随机日常<br/>（完成|购买）</th>
+							<th colspan="2">重复日常<br>（完成|购买）</th>
+							<th>收获</th>
+							<th>推到</th>
+							<th>培养</th>
+							<th>刷新</th>
+						</tr>
+					</thead>
+					<tbody id="dtatr_body">
+					</tbody>
+				</table>
+				
+				<div style="float:right;margin-right:20px;display:none" id="pagehtml">
+					<div class="pages">
+						<a id="home_page" href="javascript:void(0)">首页</a>&nbsp;&nbsp;
+						<a id="pre_page" href="javascript:void(0)">上一页</a>&nbsp;&nbsp;
+						<a id="next_page" href="javascript:void(0)">下一页</a>&nbsp;&nbsp;
+						<a id="last_page" href="javascript:void(0)">尾页</a>&nbsp;&nbsp;
+						<span>第<span id="cur_page">1</span>/<span id="total_page">1</span>页&nbsp;&nbsp;</span>
+						转到<input type="text" class="text" size="3"  id="page" value="1"/>
+						<a id="go" class="go" href="javascript:void(0);"></a>页
+					</div>
+				</div>
+			</div>
+		
+			<div style="clear:both"></div>
+		</div>
+		
+		<div style="height:50px">&nbsp;</div>
+		
+		
+		<!--弹出覆盖层-->
+		<div class="overlay" style="display:none">
+			<table style="width:220px;height:100%;margin:0 auto;">
+				<tr>
+					<td style="text-align:center">
+						<img src='<{$res}>/images/ajax-loader.gif'/>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/function.js" type="text/javascript"></script> 	
+	<script type="text/javascript">
+		var page = {
+			INIT : function(pagesize, data, total) {
+				var self = this;
+				this.curpage = 1;	
+				this.pagesize = parseInt(pagesize);
+				this.data = data;
+				this.recordnum = total;
+				this.totalpage = Math.ceil(this.recordnum/this.pagesize);
+				$("#total_page").html(this.totalpage);
+				$("#cur_page").html(self.curpage);
+			},	
+			
+			listen : function() {
+				var self = this;
+				//首页
+				$("#home_page").bind('click', function(){
+					var result = [];
+					var data = self.data;
+					var k = 0;
+					for(var i in data) {
+						if(k < self.pagesize) {
+							result.push(data[i])
+						}else {
+							break;
+						}
+						k++;
+					}
+					
+					self.show(result);
+					return false;
+				})
+				
+				//上页
+				$("#pre_page").bind('click', function(){
+					var result = [];
+					var data = self.data;
+					if(self.curpage == 1) {	//没有上一页
+						return false;
+					}else {
+						var k = 0;
+						for(var i in data) {
+							if(k >= (self.curpage-2)*self.pagesize && k< (self.curpage-1)*self.pagesize) {
+								k++;
+								result.push(data[i]);
+							}else {
+								k++;
+								continue;
+							}
+							
+						}
+						self.curpage --;
+						$("#cur_page").html(self.curpage);
+					}
+					self.show(result);
+					return false;
+				})
+				
+				//下页
+				$("#next_page").bind('click', function(){
+					var result = [];
+					var data = self.data;
+					if(self.curpage == self.totalpage) {	//没有下一页
+						return false;
+					}else {
+						var k = 0;
+						for(var i in data) {
+							if(k >= self.curpage*self.pagesize  &&k< (self.curpage+1)*self.pagesize) {
+								k++;
+								result.push(data[i]);
+							}else {
+								k++;
+								continue;
+							}
+						}
+						self.curpage ++;
+						$("#cur_page").html(self.curpage);
+					}
+					self.show(result);
+					return false;
+				})
+				
+				//尾页
+				$("#last_page").bind('click', function(){
+					var result = [];
+					var data = self.data;
+					if(self.curpage == self.totalpage) {	//没有下一页
+						return false;
+					}else {
+						var k = 0;
+						for(var i in data) {
+							if(k >= (self.totalpage-1)*self.pagesize) {
+								k++;
+								result.push(data[i]);
+							}else {
+								k++;
+								continue;
+							}
+						}
+						self.curpage ++;
+						$("#cur_page").html(self.curpage);
+					}
+					self.show(result);
+					return false;
+				})
+				
+				//跳到指定页
+				$("#go").bind('click', function(){
+					var page = $("#page").val();
+					if(page > self.totalpage) {
+						page = self.totalpage;
+					}else if(isNaN(page)) {
+						alert('请输入数字！');
+						return false;
+					}
+					var result = [];
+					var data = self.data;
+					var k = 0;
+					for(var i in data) {
+						if(k >= (page-1)*self.pagesize  && k< page*self.pagesize) {
+							k++;
+							result.push(data[i]);
+						}else {
+							k++;
+							continue;
+						}
+					}
+					self.curpage  = page;
+					$("#cur_page").html(self.curpage);
+					self.show(result);
+					return false;					
+				})
+				
+			},
+			
+			
+			show : function(data) {
+				var tbody = '';
+				var k = 0;
+				for(var i in data) {
+					tbody += "<tr>";
+					tbody += "<td>" + data[k]['date'] + "</td>";
+					tbody += "<td>" + data[k]['cwltg'] + "</td>";
+					tbody += "<td>" + data[k]['cwlcz'] + "</td>";
+					tbody += "<td>" + data[k]['jqtg'] + "</td>";
+					tbody += "<td>" + data[k]['jqzj'] + "</td>";
+					tbody += "<td>" + data[k]['dgtg'] + "</td>";
+					tbody += "<td>" + data[k]['dgzj'] + "</td>";
+					tbody += "<td>" + data[k]['qm']+ "</td>";
+					tbody += "<td>" + data[k]['dj']+ "</td>";
+					tbody += "<td>" + data[k]['ht']+ "</td>";
+					tbody += "<td>" + data[k]['ls']+ "</td>";
+					tbody += "<td>" + data[k]['xl']+ "</td>";
+					tbody += "<td>" + data[k]['qy']+ "</td>";
+					tbody += "<td>" + data[k]['du']+ "</td>";
+					tbody += "<td>" + data[k]['jm']+ "</td>";
+					tbody += "<td>" + data[k]['sjwc'] + "</td>";
+					tbody += "<td>" + data[k]['sjgm'] + "</td>";
+					tbody += "<td>" + data[k]['cfwc'] + "</td>";
+					tbody += "<td>" + data[k]['cfgm'] + "</td>";
+					tbody += "<td>" + data[k]['sh']+ "</td>";
+					tbody += "<td>" + data[k]['td']+ "</td>";
+					tbody += "<td>" + data[k]['py']+ "</td>";
+					tbody += "<td>" + data[k]['sx']+ "</td>";
+					tbody += "</tr>";
+					k++;
+				}
+				$("#dtatr_body").html(tbody);
+			}
+		}
+	
+	
+		var user_pay = {
+			INIT : function(){
+				var self = this;
+				
+				//时间插件
+				$("#startdate").datepicker();
+				$("#enddate").datepicker();
+				$("#todate").datepicker();
+				
+				//页面加载，默认显示七天数据
+				self.showAction();
+				showTitle("用户数据分析:用户行为分析");
+				page.listen();
+				
+				$("#querybtn").click(function(){
+					if(validator("startdate", "enddate")){
+						self.showAction();
+					}
+				})
+				
+				//查看详细说明
+				$("#ac_exp").mouseenter(function(){
+					$("#tip").show();
+				})
+
+				$("#ac_exp").mouseleave(function(){
+					$("#tip").hide();
+				})
+				
+				$("#delbtn").click(function() {
+					//var todate = $("#todate").val();
+					var ip = $("#sip").val();
+					$.ajax({
+						type : 'GET',
+						url : '<{$logicApp}>/useraction/delete',
+						dataType : 'json',
+						data : {
+							ip : ip
+						},
+						beforeSend : function(){
+							$(".overlay").show();
+						},
+						complete : function(){
+							$(".overlay").hide();
+						},
+						success : function (data) {
+							if(data == "success") {
+								alert("删除成功");	
+							} else {
+								alert("删除失败");
+							}
+						},
+						error : function () {
+							alert('error');
+						}
+					})		
+				})	
+			},
+			
+			//显示行为分析数据
+			showAction : function() {
+				$.ajax({
+					type : 'GET',
+					url : '<{$logicApp}>/useraction/getAction',
+					dataType : 'json',
+					data : {
+						startdate : $("#startdate").val(),
+						enddate : $("#enddate").val(),
+						ip : $("#sip").val()
+					},
+					beforeSend : function() {
+						$("#dtatr_body").html("<tr><td colspan='23'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+					},
+					success : function (data) {
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							/*
+							var tbody = '';
+							for(var i in result) {
+								tbody += "<tr>";
+								tbody += "<td>" + i + "</td>";
+								tbody += "<td>" + result[i]['cwltg'] + "</td>";
+								tbody += "<td>" + result[i]['cwlcz'] + "</td>";
+								tbody += "<td>" + result[i]['jqtg'] + "</td>";
+								tbody += "<td>" + result[i]['jqzj'] + "</td>";
+								tbody += "<td>" + result[i]['dgtg'] + "</td>";
+								tbody += "<td>" + result[i]['dgzj'] + "</td>";
+								tbody += "<td>" + result[i]['qm']+ "</td>";
+								tbody += "<td>" + result[i]['dj']+ "</td>";
+								tbody += "<td>" + result[i]['ht']+ "</td>";
+								tbody += "<td>" + result[i]['ls']+ "</td>";
+								tbody += "<td>" + result[i]['xl']+ "</td>";
+								tbody += "<td>" + result[i]['qy']+ "</td>";
+								tbody += "<td>" + result[i]['du']+ "</td>";
+								tbody += "<td>" + result[i]['jm']+ "</td>";
+								tbody += "<td>" + result[i]['sjwc'] + "</td>";
+								tbody += "<td>" + result[i]['sjgm'] + "</td>";
+								tbody += "<td>" + result[i]['cfwc'] + "</td>";
+								tbody += "<td>" + result[i]['cfgm'] + "</td>";
+								tbody += "<td>" + result[i]['sh']+ "</td>";
+								tbody += "<td>" + result[i]['td']+ "</td>";
+								tbody += "<td>" + result[i]['py']+ "</td>";
+								tbody += "<td>" + result[i]['sx']+ "</td>";
+								tbody += "</tr>";
+							}
+							$("#dtatr_body").html(tbody);
+							*/
+							
+							if(typeof(result.length) == 'undefined' ) {
+								$("#pagehtml").show();
+								page.INIT(50, result, data.total);
+								$("#home_page").trigger('click');
+							} else {
+								$("#dtatr_body").html("<tr><td colspan='23'>没有数据！</td></tr>");
+							}
+						} else {
+							$("#dtatr_body").html("<tr><td colspan='23'>没有数据！</td></tr>");
+						}
+					},
+					error : function () {
+						$("#dtatr_body").html("<tr><td colspan='23'>没有数据！</td></tr>");
+					}
+				})
+			
+			}
+
+		}
+		
+		$(document).ready(function(){
+			user_pay.INIT();
+		})
+	</script>
+</body>
+</html>

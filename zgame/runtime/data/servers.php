@@ -1,0 +1,1 @@
+<?php {"pri":"s_id","0":"s_gid","1":"s_sid","2":"s_domain","3":"s_ip","4":"s_port","5":"s_name","6":"s_flag","7":"s_inserttime"}yes

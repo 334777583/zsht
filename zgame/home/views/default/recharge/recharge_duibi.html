@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>充值对比</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+	<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	<!--
+	body {
+		margin-left: 0px;
+		margin-top: 0px;
+		margin-right: 0px;
+		margin-bottom: 0px;
+		background-color: #EEF2FB;
+		font-size: 12px;
+	}
+	-->
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、**********</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="topinfo">
+				<div>
+					<span>服务器：</span>
+					<{foreach from=$ipList item=ip}>
+						<input type="checkbox" name="db" value='<{$ip.s_id}>'  class="cbox"/><span><{$ip.s_name}></span>
+					<{/foreach}>
+				</div>
+			</div>
+			
+			<div class="topinfo">
+				<div>
+					<span>日期：</span>
+					<input type="text" class="input1" id="startdate" value="<{$startDate}>"/>至<input type="text" class="input1" id="enddate" value="<{$endDate}>"/>
+					<input type="checkbox" checked="checked" id="openItem"/><label for="openItem">展开</label>
+					<input type="button" value="查询" id="querybtn" style="margin-left:20px"/>
+				</div>
+			</div>
+			
+			<div style="clear:both"></div>
+			
+			<div class="tabitem">				
+				<div>
+					<table class="mytable" style="display:none">
+						<thead id="dtatr_thead">
+						</thead>
+						<tbody id="dtatr_body">
+						</tbody>
+					</table>
+				</div>
+			</div>
+			
+			<!--弹出覆盖层-->
+			<div class="overlay" style="display:none">
+				<table style="width:220px;height:100%;margin:0 auto;">
+					<tr>
+						<td style="text-align:center">
+							<img src='<{$res}>/images/ajax-loader.gif'/>
+						</td>
+					</tr>
+				</table>
+			</div>
+			
+			<div style="clear:both"></div>
+		</div>
+		
+	</div>
+	
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/function.js" type="text/javascript"></script> 	
+	<script type="text/javascript">
+		var recharge_duibi = {
+			INIT : function(){
+				var self = this;
+				
+				//时间插件
+				$("#startdate").datepicker();
+				$("#enddate").datepicker();
+				
+				showTitle("充值数据分析:充值对比");
+			
+				$("#querybtn").click(function(){
+					if( validator("startdate", "enddate") ){
+						self.show();
+					}
+				})
+				
+				//展开
+				$("#openItem").click(function() {
+					if($(this).is(":checked")) {
+						$(".row").attr("rowspan", 3);
+						$(".other").show();
+					} else {
+						$(".row").attr("rowspan", 1);
+						$(".other").hide();
+					}
+				})
+			},
+			
+			//table交叉样式
+			 color_table : function(table) {
+				$("#"+table+" tr:odd").css("background-color", "#edf2f7"); 
+				$("#"+table+" tr:odd").css("background-color","#e0f0f0"); 
+			 },
+			 
+			show : function() {
+				var db = [];
+				$('input[name=db]:checked').each(function() {
+					db.push($(this).val());
+				});
+				
+				$.ajax({
+					type : 'POST',
+					url : '<{$logicApp}>/rechargeduibi/getRecords',
+					dataType : 'json',
+					data : {
+						db : db,
+						startDate : $('#startdate').val(),
+						endDate :	$('#enddate').val()
+					},
+					beforeSend : function(){
+						$(".overlay").show();
+					},
+					complete : function(){
+						$(".overlay").hide();
+					},
+					success : function (data) {
+						var result = data.result;
+						if(typeof(result) != 'undefined' && result.length > 0) {
+							var gamedb = data.gamedb;
+							var thread = "<tr>";
+							thread += "<th width='100px'>日期</th>";
+							thread += "<th>对比项</th>";
+							thread += "<th>合计</th>";
+							
+							for(var k in gamedb) {
+								thread += "<th>" + gamedb[k] + "</th>";
+							}
+							thread += "</tr>";
+							$("#dtatr_thead").html(thread);
+
+							var tbody = "";
+							var n = 0;
+							for(var i in result) {
+								if(n != 0 && n%3 != 0) {
+									tbody += "<tr class='other'>";
+								} else {
+									tbody += "<tr>";
+								}
+								if(n == 0 || n%3 == 0) {
+									tbody += "<td class='row' rowspan='3'>" + result[i][0] + "</td>";
+								}
+								tbody += "<td>" + result[i][1] + "</td>";
+								tbody += "<td>" + result[i][2] + "</td>";
+								for(var k in gamedb) {
+									var index = 3 + parseInt(k);
+									tbody += "<td>" + result[i][index] + "</td>";
+								}
+								tbody += "</tr>";
+								n++;
+							}
+							$("#dtatr_body").html(tbody);
+							$(".mytable").show();
+						}else {
+							$("#dtatr_thead").html("");
+							
+							$("#dtatr_body").html("<tr><td colspan='3'>没有数据！</td></tr>");
+							$(".mytable").show();
+						}
+					},
+					error : function () {
+						$("#dtatr_thead").html("");
+							
+						$("#dtatr_body").html("<tr><td colspan='3'>没有数据！</td></tr>");
+						$(".mytable").show();
+					}
+				})
+			}
+			
+		}
+		
+		$(document).ready(function(){
+			recharge_duibi.INIT();
+		})
+	</script>
+</body>
+</html>

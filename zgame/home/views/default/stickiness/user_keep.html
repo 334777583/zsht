@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户留存分析</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+	<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	<!--
+	body {
+		margin-left: 0px;
+		margin-top: 0px;
+		margin-right: 0px;
+		margin-bottom: 0px;
+		background-color: #EEF2FB;
+		font-size: 12px;
+	}
+	.toptitle{
+		cursor : pointer;
+	}
+	-->
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、<b>留存用户</b>:过去7天有过登陆行为的用户，就视为留存用户;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">2、<b>流失用户</b>:过去7天没有过登陆行为的用户，就视为流失用户;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">3、留存用户分布及流失用户分布分析数据;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">4、此页面开服前7天请无视、7天后才有数据;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">5、开服7天数据请进入“新进分析”;</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="topinfo">
+				<div>
+					<span>服务器:</span>
+					<select id="sip">
+						<{foreach from=$ipList item=ip}>
+							<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+						<{/foreach}>
+					</select>
+					<input type="text" class="input1" id="enddate" value="<{$endDate}>"/>
+					<input type="button" value="查询" id="querybtn" style="margin-left:20px"/>
+				</div>
+			</div>	
+			
+			<div style="clear:both"></div>
+			
+			<div>
+				<div class="toptitle">
+					<span>留存等级分布<span/>
+				</div>
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='100px'>留存等级</th>
+										<th width='100px'>留存用户总数</th>
+										<th width='100px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable" id="lcfb_body">
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="lcfb_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+
+				<div class="toptitle">
+					<span>用户死亡等级分布(开服至<span id="lhsw_time"></span>)</span>
+					<span style="float:right;cursor:pointer" id="lhsw_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="lhsw_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>	
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="lhsw_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='100px'>死亡等级</th>
+										<th width='100px'>死亡总数</th>
+										<th width='100px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="lhsw_body"> 
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="lhsw_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>流失用户任务ID分布</span>
+					<span style="float:right;cursor:pointer" id="lsrw_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="lsrw_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>	
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="lsrw_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='100px'>流失任务ID</th>
+										<th width='100px'>流失用户总数</th>
+										<th width='100px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable" id="lsrw_body">
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="lsrw_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+
+				<div class="toptitle">
+					<span>流失用户等级分布</span>
+					<span style="float:right;cursor:pointer" id="lsdj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="lsdj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>	
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="lsdj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='100px'>流失等级</th>
+										<th width='100px'>人数</th>
+										<th width='100px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id='lsdj_body'>
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="lsdj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<!--
+				<div class="toptitle">
+					<span>留存用户武器强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="yhsw_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yhsw_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yhsw_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="yhsw_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="yhsw_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户头部强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="tbqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tbqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tbqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tbqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tbqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户衣服强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="yfqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yfqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yfqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="yfqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="yfqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户腰带强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="pfqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="pfqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="pfqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="pfqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="pfqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户项链强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="xlqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="xlqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="xlqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="xlqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="xlqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户护腕强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="hwqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="hwqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="hwqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="hwqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="hwqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户戒指强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="jzqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="jzqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="jzqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="jzqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="jzqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户鞋子强化等级分布</span>
+					<span style="float:right;cursor:pointer" id="xzqh_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="xzqh_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="xzqh_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="xzqh_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="xzqh_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户武器追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="yhzb_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yhzb_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yhzb_table">		
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>追加等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="yhzb_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="yhzb_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户头部追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="tbzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tbzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tbzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tbzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tbzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户衣服追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="yfzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yfzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yfzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="yfzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="yfzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户腰带追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="pfzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="pfzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="pfzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="pfzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="pfzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户项链追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="xlzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="xlzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="xlzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="xlzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="xlzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户护腕追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="hwzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="hwzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="hwzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="hwzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="hwzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户戒指追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="jzzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="jzzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="jzzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="jzzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="jzzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户鞋子追加等级分布</span>
+					<span style="float:right;cursor:pointer" id="xzzj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="xzzj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="xzzj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>强化等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="xzzj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="xzzj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+					
+				
+
+				<div class="toptitle">
+					<span>留存用户套装武器等级分布</span>
+					<span style="float:right;cursor:pointer" id="yhtzdj_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yhtzdj_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yhtzdj_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="yhtzdj_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="yhtzdj_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装头部等级分布</span>
+					<span style="float:right;cursor:pointer" id="tztb_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tztb_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tztb_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tztb_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tztb_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户套装衣服等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzyf_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzyf_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzyf_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzyf_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzyf_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装腰带等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzpf_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzpf_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzpf_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzpf_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzpf_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装项链等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzxl_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzxl_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzxl_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzxl_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzxl_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装护腕等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzhw_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzhw_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzhw_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzhw_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzhw_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装戒指等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzjz_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzjz_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzjz_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzjz_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzjz_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				<div class="toptitle">
+					<span>留存用户套装鞋子等级分布</span>
+					<span style="float:right;cursor:pointer" id="tzxz_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="tzxz_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>		
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="tzxz_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable">
+								<thead>
+									<tr>
+										<th width='110px'>套装等级</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+							</table>
+							<div style="height:500px;overflow-y:auto">	
+								<table class="mytable">
+									<tbody id="tzxz_body">
+									</tbody>
+								</table>
+							</div>
+						</td>
+						<td width="80%" align="center">
+							<div id="tzxz_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				
+				
+				<div class="toptitle">
+					<span>留存用户套装技能个数分布</span>
+					<span style="float:right;cursor:pointer" id="yhtzjn_more"><img src='<{$res}>/images/zk.png'/></span>
+					<span style="float:right;cursor:pointer;display:none" id="yhtzjn_less"><img src='<{$res}>/images/sq.png'/></span>
+				</div>
+				<table cellpadding="0" cellspacing="0" class="table_blue2" width="100%" style="display:none" id="yhtzjn_table">	
+					<tr>
+						<td width="20%" style="vertical-align:top">
+							<table class="mytable" >
+								<thead>
+									<tr>
+										<th width='110px'>技能个数</th>
+										<th width='110px'>人数</th>
+										<th width='86px'>百分比</th>
+									</tr>
+								</thead>
+								<tbody id="yhtzjn_body">
+								</tbody>
+							</table>
+						</td>
+						<td width="80%" align="center">
+							<div id="yhtzjn_div" style="width: 80%; height: 500px;"></div>
+						</td>
+					</tr>
+				</table>
+				-->
+				
+			</div>
+		
+			<div style="clear:both"></div>
+		</div>
+		
+		<div style="height:50px">&nbsp;</div>
+		
+	</div>
+	
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/function.js" type="text/javascript"></script> 	
+	<script type="text/javascript">
+		var user_keep = {
+			INIT : function(){
+				var self = this;
+				
+				//时间插件
+				$("#startdate").datepicker();
+				$("#enddate").datepicker();
+				
+				showTitle("用户数据分析:用户留存分析");
+				
+				$("#lhsw_time").html($("#enddate").val());
+				
+				$(".toptitle").not($(".toptitle:first")).click(function(){			//点击标题栏展开
+					var c = $(this).children().last();
+					var hide_id = c.attr('id');
+					var show_id = c.prev().attr('id');
+					if($("#"+show_id).css("display") != "none") {
+						$("#"+show_id).trigger('click');
+					}else{
+						$("#"+hide_id).trigger('click');
+					}
+				})
+				
+				$("#querybtn").click(function(){
+					$("#lhsw_time").html($("#enddate").val());
+					if(self.validator("enddate") ){
+						self.showChart();
+						if($("#lhsw_less").css("display") != "none") {
+							self.showLHSW();
+						}
+
+						if($("#lsrw_less").css("display") != "none") {
+							self.showLSRW();
+						}
+						
+						if($("#lsdj_less").css("display") != "none") {
+							self.showLSDJ();
+						}
+						
+						/*
+						if($("#yhsw_less").css("display") != "none") {
+							self.showWQQH('9', 'yhsw');
+						}
+						
+						if($("#tbqh_less").css("display") != "none") {
+							self.showWQQH('1', 'tbqh');
+						}
+						
+						if($("#yfqh_less").css("display") != "none") {
+							self.showWQQH('10', 'yfqh');
+						}
+						
+						if($("#pfqh_less").css("display") != "none") {
+							self.showWQQH('2', 'pfqh');
+						}
+						
+						if($("#xlqh_less").css("display") != "none") {
+							self.showWQQH('3', 'xlqh');
+						}
+						
+						if($("#hwqh_less").css("display") != "none") {
+							self.showWQQH('4', 'hwqh');
+						}
+						
+						if($("#jzqh_less").css("display") != "none") {
+							self.showWQQH('5', 'jzqh');
+						}	
+						
+						if($("#xzqh_less").css("display") != "none") {
+							self.showWQQH('7', 'xzqh');
+						}	
+						
+						if($("#yhzb_less").css("display") != "none") {
+							self.showWQZJ('9', 'yhzb');
+						}	
+						
+						if($("#tbzj_less").css("display") != "none") {
+							self.showWQZJ('1', 'tbzj');
+						}	
+						
+						if($("#yfzj_less").css("display") != "none") {
+							self.showWQZJ('10', 'yfzj');
+						}	
+						
+						if($("#pfzj_less").css("display") != "none") {
+							self.showWQZJ('2', 'pfzj');
+						}
+						
+						if($("#xlzj_less").css("display") != "none") {
+							self.showWQZJ('3', 'xlzj');
+						}
+						
+						if($("#hwzj_less").css("display") != "none") {
+							self.showWQZJ('4', 'hwzj');
+						}
+						
+						if($("#jzzj_less").css("display") != "none") {
+							self.showWQZJ('5', 'jzzj');
+						}
+						
+						if($("#xzzj_less").css("display") != "none") {
+							self.showWQZJ('7', 'xzzj');
+						}
+						
+						if($("#yhtzdj_less").css("display") != "none") {
+							self.showTZDJ('9', 'yhtzdj');
+						}
+						
+						if($("#tztb_less").css("display") != "none") {
+							self.showTZDJ('1', 'tztb');
+						}
+						
+						if($("#tzyf_less").css("display") != "none") {
+							self.showTZDJ('10', 'tzyf');
+						}	
+						
+						if($("#tzpf_less").css("display") != "none") {
+							self.showTZDJ('2', 'tzpf');
+						}	
+						
+						if($("#tzxl_less").css("display") != "none") {
+							self.showTZDJ('3', 'tzxl');
+						}	
+						
+						if($("#tzhw_less").css("display") != "none") {
+							self.showTZDJ('4', 'tzhw');
+						}	
+						
+						if($("#tzjz_less").css("display") != "none") {
+							self.showTZDJ('5', 'tzjz');
+						}	
+						
+						if($("#tzxz_less").css("display") != "none") {
+							self.showTZDJ('7', 'tzxz');
+						}
+
+						if($("#yhtzjn_less").css("display") != "none") {
+							self.showTZJN();
+						}
+						*/						
+					}
+				})
+				
+				//用户死亡等级分布
+				$("#lhsw_more").click(function(){
+					$("#lhsw_table").show();
+					$("#lhsw_more").hide();
+					$("#lhsw_less").show();
+					self.showLHSW();
+					return false;
+				})
+				
+				$("#lhsw_less").click(function(){
+					$("#lhsw_table").hide();
+					$("#lhsw_more").show();
+					$("#lhsw_less").hide();
+					return false;
+				})
+				
+				//流失用户任务ID分布
+				$("#lsrw_more").click(function(){
+					$("#lsrw_table").show();
+					$("#lsrw_more").hide();
+					$("#lsrw_less").show();
+					self.showLSRW();
+					return false;
+				})
+				
+				$("#lsrw_less").click(function(){
+					$("#lsrw_table").hide();
+					$("#lsrw_more").show();
+					$("#lsrw_less").hide();
+					return false;
+				})
+				
+				//流失用户等级分布
+				$("#lsdj_more").click(function(){
+					$("#lsdj_table").show();
+					$("#lsdj_more").hide();
+					$("#lsdj_less").show();
+					self.showLSDJ();
+					return false;
+				})
+				
+				$("#lsdj_less").click(function(){
+					$("#lsdj_table").hide();
+					$("#lsdj_more").show();
+					$("#lsdj_less").hide();
+					return false;
+				})
+				
+				//留存用户武器装备强化等级分布
+				$("#yhsw_more").click(function(){
+					$("#yhsw_table").show();
+					$("#yhsw_more").hide();
+					$("#yhsw_less").show();
+					self.showWQQH('9', 'yhsw');
+					return false;
+				})
+				
+				$("#yhsw_less").click(function(){
+					$("#yhsw_table").hide();
+					$("#yhsw_more").show();
+					$("#yhsw_less").hide();
+					return false;
+				})
+				
+				//留存用户头部装备强化等级分布
+				$("#tbqh_more").click(function(){
+					$("#tbqh_table").show();
+					$("#tbqh_more").hide();
+					$("#tbqh_less").show();
+					self.showWQQH('1', 'tbqh');
+					return false;
+				})
+				
+				$("#tbqh_less").click(function(){
+					$("#tbqh_table").hide();
+					$("#tbqh_more").show();
+					$("#tbqh_less").hide();
+					return false;
+				})
+				
+				//留存用户衣服装备强化等级分布
+				$("#yfqh_more").click(function(){
+					$("#yfqh_table").show();
+					$("#yfqh_more").hide();
+					$("#yfqh_less").show();
+					self.showWQQH('10', 'yfqh');
+					return false;
+				})
+				
+				$("#yfqh_less").click(function(){
+					$("#yfqh_table").hide();
+					$("#yfqh_more").show();
+					$("#yfqh_less").hide();
+					return false;
+				})
+				
+				//留存用户腰带装备强化等级分布
+				$("#pfqh_more").click(function(){
+					$("#pfqh_table").show();
+					$("#pfqh_more").hide();
+					$("#pfqh_less").show();
+					self.showWQQH('2', 'pfqh');
+					return false;
+				})
+				
+				$("#pfqh_less").click(function(){
+					$("#pfqh_table").hide();
+					$("#pfqh_more").show();
+					$("#pfqh_less").hide();
+					return false;
+				})
+				
+				//留存用户项链装备强化等级分布
+				$("#xlqh_more").click(function(){
+					$("#xlqh_table").show();
+					$("#xlqh_more").hide();
+					$("#xlqh_less").show();
+					self.showWQQH('3', 'xlqh');
+					return false;
+				})
+				
+				$("#xlqh_less").click(function(){
+					$("#xlqh_table").hide();
+					$("#xlqh_more").show();
+					$("#xlqh_less").hide();
+					return false;
+				})
+				
+				//留存用户护腕装备强化等级分布
+				$("#hwqh_more").click(function(){
+					$("#hwqh_table").show();
+					$("#hwqh_more").hide();
+					$("#hwqh_less").show();
+					self.showWQQH('4', 'hwqh');
+					return false;
+				})
+				
+				$("#hwqh_less").click(function(){
+					$("#hwqh_table").hide();
+					$("#hwqh_more").show();
+					$("#hwqh_less").hide();
+					return false;
+				})
+				
+				//留存用户戒指装备强化等级分布
+				$("#jzqh_more").click(function(){
+					$("#jzqh_table").show();
+					$("#jzqh_more").hide();
+					$("#jzqh_less").show();
+					self.showWQQH('5', 'jzqh');
+					return false;
+				})
+				
+				$("#jzqh_less").click(function(){
+					$("#jzqh_table").hide();
+					$("#jzqh_more").show();
+					$("#jzqh_less").hide();
+					return false;
+				})
+				
+				//留存用户鞋子装备强化等级分布
+				$("#xzqh_more").click(function(){
+					$("#xzqh_table").show();
+					$("#xzqh_more").hide();
+					$("#xzqh_less").show();
+					self.showWQQH('7', 'xzqh');
+					return false;
+				})
+				
+				$("#xzqh_less").click(function(){
+					$("#xzqh_table").hide();
+					$("#xzqh_more").show();
+					$("#xzqh_less").hide();
+					return false;
+				})
+				
+				//留存用户武器装备追加等级分布
+				$("#yhzb_more").click(function(){
+					$("#yhzb_table").show();
+					$("#yhzb_more").hide();
+					$("#yhzb_less").show();
+					self.showWQZJ('9', 'yhzb');
+					return false;
+				})
+				
+				$("#yhzb_less").click(function(){
+					$("#yhzb_table").hide();
+					$("#yhzb_more").show();
+					$("#yhzb_less").hide();
+					return false;
+				})
+				
+				//留存用户头部装备追加等级分布
+				$("#tbzj_more").click(function(){
+					$("#tbzj_table").show();
+					$("#tbzj_more").hide();
+					$("#tbzj_less").show();
+					self.showWQZJ('1', 'tbzj');
+					return false;
+				})
+				
+				$("#tbzj_less").click(function(){
+					$("#tbzj_table").hide();
+					$("#tbzj_more").show();
+					$("#tbzj_less").hide();
+					return false;
+				})
+				
+				//留存用户衣服装备追加等级分布
+				$("#yfzj_more").click(function(){
+					$("#yfzj_table").show();
+					$("#yfzj_more").hide();
+					$("#yfzj_less").show();
+					self.showWQZJ('10', 'yfzj');
+					return false;
+				})
+				
+				$("#yfzj_less").click(function(){
+					$("#yfzj_table").hide();
+					$("#yfzj_more").show();
+					$("#yfzj_less").hide();
+					return false;
+				})
+				
+				//留存用户腰带装备追加等级分布
+				$("#pfzj_more").click(function(){
+					$("#pfzj_table").show();
+					$("#pfzj_more").hide();
+					$("#pfzj_less").show();
+					self.showWQZJ('2', 'pfzj');
+					return false;
+				})
+				
+				$("#pfzj_less").click(function(){
+					$("#pfzj_table").hide();
+					$("#pfzj_more").show();
+					$("#pfzj_less").hide();
+					return false;
+				})
+				
+				//留存用户项链装备追加等级分布
+				$("#xlzj_more").click(function(){
+					$("#xlzj_table").show();
+					$("#xlzj_more").hide();
+					$("#xlzj_less").show();
+					self.showWQZJ('3', 'xlzj');
+					return false;
+				})
+				
+				$("#xlzj_less").click(function(){
+					$("#xlzj_table").hide();
+					$("#xlzj_more").show();
+					$("#xlzj_less").hide();
+					return false;
+				})
+				
+				//留存用户护腕装备追加等级分布
+				$("#hwzj_more").click(function(){
+					$("#hwzj_table").show();
+					$("#hwzj_more").hide();
+					$("#hwzj_less").show();
+					self.showWQZJ('4', 'hwzj');
+					return false;
+				})
+				
+				$("#hwzj_less").click(function(){
+					$("#hwzj_table").hide();
+					$("#hwzj_more").show();
+					$("#hwzj_less").hide();
+					return false;
+				})
+				
+				//留存用户戒指装备追加等级分布
+				$("#jzzj_more").click(function(){
+					$("#jzzj_table").show();
+					$("#jzzj_more").hide();
+					$("#jzzj_less").show();
+					self.showWQZJ('5', 'jzzj');
+					return false;
+				})
+				
+				$("#jzzj_less").click(function(){
+					$("#jzzj_table").hide();
+					$("#jzzj_more").show();
+					$("#jzzj_less").hide();
+					return false;
+				})
+				
+				//留存用户鞋子装备追加等级分布
+				$("#xzzj_more").click(function(){
+					$("#xzzj_table").show();
+					$("#xzzj_more").hide();
+					$("#xzzj_less").show();
+					self.showWQZJ('7', 'xzzj');
+					return false;
+				})
+				
+				$("#xzzj_less").click(function(){
+					$("#xzzj_table").hide();
+					$("#xzzj_more").show();
+					$("#xzzj_less").hide();
+					return false;
+				})
+				
+				//留存用户套装武器等级分布
+				$("#yhtzdj_more").click(function(){
+					$("#yhtzdj_table").show();
+					$("#yhtzdj_more").hide();
+					$("#yhtzdj_less").show();
+					self.showTZDJ('9', 'yhtzdj');
+					return false;
+				})
+				
+				
+				$("#yhtzdj_less").click(function(){
+					$("#yhtzdj_table").hide();
+					$("#yhtzdj_more").show();
+					$("#yhtzdj_less").hide();
+					return false;
+				})
+				
+				//留存用户套装头部装备等级分布
+				$("#tztb_more").click(function(){
+					$("#tztb_table").show();
+					$("#tztb_more").hide();
+					$("#tztb_less").show();
+					self.showTZDJ('1', 'tztb');
+					return false;
+				})
+				
+				$("#tztb_less").click(function(){
+					$("#tztb_table").hide();
+					$("#tztb_more").show();
+					$("#tztb_less").hide();
+					return false;
+				})
+				
+				//留存用户套装衣服装备等级分布
+				$("#tzyf_more").click(function(){
+					$("#tzyf_table").show();
+					$("#tzyf_more").hide();
+					$("#tzyf_less").show();
+					self.showTZDJ('10', 'tzyf');
+					return false;
+				})
+				
+				$("#tzyf_less").click(function(){
+					$("#tzyf_table").hide();
+					$("#tzyf_more").show();
+					$("#tzyf_less").hide();
+					return false;
+				})
+				
+				//留存用户套装腰带装备等级分布
+				$("#tzpf_more").click(function(){
+					$("#tzpf_table").show();
+					$("#tzpf_more").hide();
+					$("#tzpf_less").show();
+					self.showTZDJ('2', 'tzpf');
+					return false;
+				})
+				
+				$("#tzpf_less").click(function(){
+					$("#tzpf_table").hide();
+					$("#tzpf_more").show();
+					$("#tzpf_less").hide();
+					return false;
+				})
+				
+				//留存用户套装项链装备等级分布
+				$("#tzxl_more").click(function(){
+					$("#tzxl_table").show();
+					$("#tzxl_more").hide();
+					$("#tzxl_less").show();
+					self.showTZDJ('3', 'tzxl');
+					return false;
+				})
+				
+				$("#tzxl_less").click(function(){
+					$("#tzxl_table").hide();
+					$("#tzxl_more").show();
+					$("#tzxl_less").hide();
+					return false;
+				})
+				
+				//留存用户套装护腕装备等级分布
+				$("#tzhw_more").click(function(){
+					$("#tzhw_table").show();
+					$("#tzhw_more").hide();
+					$("#tzhw_less").show();
+					self.showTZDJ('4', 'tzhw');
+					return false;
+				})
+				
+				$("#tzhw_less").click(function(){
+					$("#tzhw_table").hide();
+					$("#tzhw_more").show();
+					$("#tzhw_less").hide();
+					return false;
+				})
+				
+				//留存用户套装戒指装备等级分布
+				$("#tzjz_more").click(function(){
+					$("#tzjz_table").show();
+					$("#tzjz_more").hide();
+					$("#tzjz_less").show();
+					self.showTZDJ('5', 'tzjz');
+					return false;
+				})
+				
+				$("#tzjz_less").click(function(){
+					$("#tzjz_table").hide();
+					$("#tzjz_more").show();
+					$("#tzjz_less").hide();
+					return false;
+				})
+				
+				//留存用户套装鞋子装备等级分布
+				$("#tzxz_more").click(function(){
+					$("#tzxz_table").show();
+					$("#tzxz_more").hide();
+					$("#tzxz_less").show();
+					self.showTZDJ('7', 'tzxz');
+					return false;
+				})
+				
+				$("#tzxz_less").click(function(){
+					$("#tzxz_table").hide();
+					$("#tzxz_more").show();
+					$("#tzxz_less").hide();
+					return false;
+				})
+				
+				//留存用户套装技能个数分布
+				$("#yhtzjn_more").click(function(){
+					$("#yhtzjn_table").show();
+					$("#yhtzjn_more").hide();
+					$("#yhtzjn_less").show();
+					self.showTZJN();
+					return false;
+				})
+				
+				$("#yhtzjn_less").click(function(){
+					$("#yhtzjn_table").hide();
+					$("#yhtzjn_more").show();
+					$("#yhtzjn_less").hide();
+					return false;
+				})
+				
+				//页面加载，显示当天数据
+				self.showChart();
+			},
+			
+			
+			//留存等级分布
+			showChart : function(){
+				var self = this;
+
+				$.ajax({							
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getLD',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						enddate : $("#enddate").val()
+					},
+					beforeSend : function() {
+						$("#lcfb_body").html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$("#lcfb_div").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						var loseIds = [];
+						var keepIds = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							loseIds = data.loseIds;
+							keepIds = data.keepIds;
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+							$("body").data('loseIds', loseIds);
+							$("body").data('keepIds', keepIds);
+							$("#lcfb_body").html(tbody);
+							self.showColumn(chartData, "lcfb_div");	
+								
+						}
+					},
+					error : function() {
+						$("#lcfb_body").html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$("#lcfb_div").html("");
+					}
+				})
+		
+			},
+			
+			//用户死亡等级分布
+			showLHSW : function() {
+				var self = this;
+				$.ajax({		
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getSF',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						enddate : $("#enddate").val()
+					},
+					beforeSend : function() {
+						$("#lhsw_body").html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$("#lhsw_div").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+
+							$("#lhsw_body").html(tbody);
+							self.showColumn(chartData, "lhsw_div");	
+						}
+					},
+					error : function() {
+						$("#lhsw_body").html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$("#lhsw_div").html("");
+					}
+				})
+			
+			},
+			
+			//流失用户任务ID分布
+			showLSRW : function() {
+				var self = this;
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getLS',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						enddate : $("#enddate").val(),
+						loseIds : $('body').data('loseIds')
+					},
+					beforeSend : function() {
+						$("#lsrw_body").html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$("#lsrw_div").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							if(typeof(result.length) == 'undefined') {
+								for(var i in result){
+									var item = {};		
+									tbody += "<tr>";
+									tbody += "<td width='110px'>" + i + "</td>";
+									tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+									tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+									tbody += "</tr>";
+
+									item.country = i+"级";
+									item.visits = result[i]['num'];
+									chartData.push(item);
+								}
+								
+								$("#lsrw_body").html(tbody);
+								self.showColumn(chartData, "lsrw_div");
+							}else {
+								$("#lsrw_body").html('<tr><td colspan="3">没有记录！</td></tr>');
+								$("#lsrw_div").html("");
+							}
+						}else {
+							$("#lsrw_body").html('<tr><td colspan="3">没有记录！</td></tr>');
+							$("#lsrw_div").html("");
+						}
+						
+						
+						
+						
+					},
+					error : function() {
+						$("#lsrw_body").html('<tr><td colspan="3">没有记录！</td></tr>');
+						$("#lsrw_div").html("");
+					}
+				})
+			},
+			
+			//流失用户等级分布
+			showLSDJ : function() {
+				var self = this;
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getLRD',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						enddate : $("#enddate").val(),
+						loseIds : $('body').data("loseIds")
+					},
+					beforeSend : function() {
+						$("#lsdj_body").html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$("#lsdj_div").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+								
+							$("#lsdj_body").html(tbody);
+							self.showColumn(chartData, "lsdj_div");
+							
+						}else{
+							$("#lsdj_body").html('<tr><td colspan="3">没有记录！</td></tr>');
+							$("#lsdj_div").html("");
+						}
+						
+						
+					},
+					error : function() {
+						$("#lsdj_body").html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$("#lsdj_div").html("");
+					}
+				})
+			},
+			
+			
+			//留存用户装备强化等级分布
+			showWQQH : function(part, name) {
+				var self = this;
+				var body = "#"+name+"_body";
+				var div = "#"+name+"_div";
+				var chartDiv = name+"_div";
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getTBQH',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						part : part,
+						keepIds : $('body').data("keepIds")
+					},
+					beforeSend : function() {
+						$(body).html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$(div).html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+								
+							$(body).html(tbody);
+							self.showColumn(chartData, chartDiv);
+							
+						}else{
+							$(body).html('<tr><td colspan="3">没有记录！</td></tr>');
+							$(div).html("");
+						}
+						
+						
+					},
+					error : function() {
+						$(body).html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$(div).html("");
+					}
+				})
+			},
+			
+			//留存用户装备追加等级分布
+			showWQZJ : function(part, name) {
+				var self = this;
+				var body = "#"+name+"_body";
+				var div = "#"+name+"_div";
+				var chartDiv = name+"_div";
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getZBZJ',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						keepIds : $('body').data("keepIds"),
+						part : part
+					},
+					beforeSend : function() {
+						$(body).html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$(div).html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+								
+							$(body).html(tbody);
+							self.showColumn(chartData, chartDiv);
+							
+						}else{
+							$(body).html('<tr><td colspan="3">没有记录！</td></tr>');
+							$(div).html("");
+						}
+					},
+					error : function() {
+						$(body).html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$(div).html("");
+					}
+				})
+			},
+			
+			//留存用户套装等级分布
+			showTZDJ : function(part, name){
+				var self = this;
+				var body = "#"+name+"_body";
+				var div = "#"+name+"_div";
+				var chartDiv = name+"_div";
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getTZDJ',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						keepIds : $('body').data("keepIds"),
+						part : part
+					},
+					beforeSend : function() {
+						$(body).html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$(div).html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "级</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+								
+							$(body).html(tbody);
+							self.showColumn(chartData, chartDiv);
+							
+						}else{
+							$(body).html('<tr><td colspan="3">没有记录！</td></tr>');
+							$(div).html("");
+						}
+						
+						
+					},
+					error : function() {
+						$(body).html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$(div).html("");
+					}
+				})
+			
+			},
+			
+			//留存用户套装技能个数分布
+			showTZJN : function() {
+				var self = this;
+				$.ajax({			
+					type : 'post',
+					url : '<{$logicApp}>/userkeep/getTZJN',
+					dataType : 'json',
+					async : false,
+					cache : true,
+					data : {
+						ip :  $("#sip").val(),
+						keepIds : $('body').data("keepIds")
+					},
+					beforeSend : function() {
+						$("#yhtzjn_body").html("<tr><td colspan='3'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+						$("#yhtzjn_div").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src='<{$res}>/images/loading.gif'/></div>");
+					},
+					success : function(data) {
+						var tbody = '';
+						var chartData = [];
+						if(typeof(data.result) != 'undefined') {
+							var result = data.result;
+							
+							for(var i in result){
+								var item = {};		
+								tbody += "<tr>";
+								tbody += "<td width='110px'>" + i + "</td>";
+								tbody += "<td width='110px'>" + result[i]['num'] + "</td>";
+								tbody += "<td width='86px'>" + result[i]['percent'] + "%"  + "</td>";
+								tbody += "</tr>";
+
+								item.country = i+"级";
+								item.visits = result[i]['num'];
+								chartData.push(item);
+							}
+								
+							$("#yhtzjn_body").html(tbody);
+							self.showColumn(chartData, "yhtzjn_div");
+							
+						}else{
+							$("#yhtzjn_body").html('<tr><td colspan="3">没有记录！</td></tr>');
+							$("#yhtzjn_div").html("");
+						}
+					},
+					error : function() {
+						$("#yhtzjn_body").html("<tr><td colspan='3'>没有记录！</td></tr>");
+						$("#yhtzjn_div").html("");
+					}
+				})
+			
+			},
+			
+			
+			//显示柱状图
+			showColumn : function(data, div) {
+				var chart = new AmCharts.AmSerialChart();
+                chart.dataProvider = data;
+                chart.categoryField = "country";
+                chart.startDuration = 1;
+
+                // AXES
+                // category
+                var categoryAxis = chart.categoryAxis;
+                categoryAxis.labelRotation = 90;
+                categoryAxis.gridPosition = "start";
+
+                // value
+                // in case you don't want to change default settings of value axis,
+                // you don't need to create it, as one value axis is created automatically.
+
+                // GRAPH
+                var graph = new AmCharts.AmGraph();
+                graph.valueField = "visits";
+                graph.balloonText = "[[category]]: [[value]]";
+                graph.type = "column";
+                graph.lineAlpha = 0;
+                graph.fillAlphas = 0.8;
+                chart.addGraph(graph);
+
+                chart.write(div);
+			},
+			
+			//验证时间
+			validator : function(enddate){
+				var isok = true;
+				var reg = /\d{4}-\d{2}-\d{2}/;
+				var end = $("#"+enddate).val();
+				if(end == ""){
+					alert("请输入时间！");
+					isok = false;
+				}else if(!reg.test(end)){
+					alert("请输入格式为YYYY-MM-DD的时间");
+					isok = false;
+				}
+				return isok;
+			}
+				
+		}
+		
+		$(document).ready(function(){
+			user_keep.INIT();
+		})
+	</script>
+</body>
+</html>

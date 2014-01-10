@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>活跃分析</title>
+<meta http-equiv="Content-Type" content="text/html; chartset=utf-8" />
+<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #EEF2FB;
+}
+-->
+</style>
+</head>
+<body>
+	<div>
+		<div id="tabs-1" class="tabitem">
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、<b>留存用户</b>:过去7天有过登陆行为的用户，就视为留存用户;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">2、<b>留存率</b>=查询当天的新增登陆用户，在第N天仍然有登陆的用户数/查询当天新增登陆用户数;</td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">3、曲线图中，默认不能显示查询的所有数据，可拖动<font color="red"><b>横向滚动条</b></font>OR点击图右上方的<font color="red"><b>"Showall"</b></font>查看所有信息</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="topinfo">
+				<label>
+					<span>服务器:</span>
+					<select id="sip">
+						<{foreach from=$ipList item=ip}>
+							<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+						<{/foreach}>
+					</select>
+				</label>
+				<label>
+					<span>日期:</span>
+					<input type="text" id="date" class="input1" value="<{$date}>"/>
+				</label>
+				<label>
+					<input type="button" id="quary" value="查询"/>
+				</label>
+			</div>
+			<div>
+				<table  class="mytable" cellspacing="0" align="center" id="dtable" style="table-layout:fixed">
+					<thead>
+						<tr>
+							<th rowspan="2" width="60px">日期</th>
+							<th colspan="2">第二天</th>
+							<th colspan="2">第三天</th>
+							<th colspan="2">第四天</th>
+							<th colspan="2">第五天</th>
+							<th colspan="2">第六天</th>
+							<th colspan="2">第七天</th>
+							<th colspan="2">第十五天</th>
+						</tr>
+						<tr>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+							<th colspan="2">人数|留存率</th>
+						</tr>
+					</thead>
+					<tbody id="dtatr">
+					</tbody>
+				</table>
+			</div>
+			<div align="center">
+				<h3 id="titleText"><{$date}></h3>
+			</div>
+			<div id="doublediv" style="width: 99%; height: 400px;" class="table_blue2"></div>
+			
+			<br/>
+			<hr/>
+			<div>
+				<h3>月活跃用户</h3>
+				<table  class="mytable" id="monthstat">
+					<thead>
+						<tr>
+							<th>1月</th>
+							<th>2月</th>
+							<th>3月</th>
+							<th>4月</th>
+							<th>5月</th>
+							<th>6月</th>
+							<th>7月</th>
+							<th>8月</th>
+							<th>9月</th>
+							<th>10月</th>
+							<th>11月</th>
+							<th>12月</th>
+						</tr>
+					</thead>
+					<tbody id="mbody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script> 
+<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+<script src="<{$res}>/js/function.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var flag = true;
+	var user_active = {
+		INIT : function() {
+			var self = this;
+			//时间插件
+			$("#date").datepicker();	
+			
+			//查询
+			$("#quary").click(function(){
+				self.show();
+				if(flag) {
+					self.showMonth();
+				}
+			});
+			
+			$("#sip").change(function() {
+				flag = true;
+			})
+			
+			self.show();	//加载显示图表
+			self.showMonth();
+			showTitle("用户数据分析:活跃分析");
+			
+	
+		},
+		
+		//获取数据显示表格及图表
+		show : function() {
+			var self = this;
+			$("#dtatr").html("");	//清空table
+			$.ajax({
+				type : 'get',
+				url : '<{$logicApp}>/useractive/getDouble',
+				dataType : 'json',
+				data:{
+					ip : $("#sip").val(),
+					date : $("#date").val()
+				},
+				beforeSend : function(){
+					$("#dtatr").html("<tr><td colspan='15'><img src=\"<{$res}>/images/loading.gif\"/></td></tr>");
+					$("#doublediv").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'><img src=\"<{$res}>/images/loading.gif\"/></div>");
+				},
+				success : function(data){
+					$("#titleText").html(data.date);
+					if(typeof(data.result.length) == 'undefined') {
+						 $("#date").val(data.date);
+						 var chartData = [];
+						 var html = "";
+						 html += "<tr>";
+						 html += "<td>" + data.date + "</td>";
+						 for(var i in data.result){
+							 var newDate = parseDate(i);
+							 var visits = data.result[i]['percent'];
+							 chartData.push({
+								 date: newDate,
+								 visits: visits
+							 }); 
+							 
+							html += "<td>" + data.result[i]['people'] + "</td>";
+							html += "<td>" + data.result[i]['percent'] + "%" + "</td>";
+							 
+						 }
+						 html += "</tr>";
+						 $("#dtatr").html(html);
+						 self.showChart(chartData);
+					} else {
+						$("#dtatr").html("<tr><td colspan='15'>没有记录！</td></tr>");
+						$("#doublediv").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'>没有记录！</div>");
+					}
+				},
+				error : function() {
+					$("#dtatr").html("<tr><td colspan='15'>没有记录！</td></tr>");
+					$("#doublediv").html("<div style='margin-top:200px;width:100%;display:block;text-align:center'>没有记录！</div>");
+				}
+			});
+		},
+		
+		//双周留存amchart配置
+		showChart : function(chartData) {
+			var chart;	
+
+			// this method is called when chart is first inited as we listen for "dataUpdated" event
+			function zoomChart() {
+			 // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+				chart.zoomToIndexes(0, 15);
+			}
+
+			// SERIAL CHART    
+			chart = new AmCharts.AmSerialChart();
+			chart.pathToImages = "<{$res}>/images/";
+			chart.zoomOutButton = {
+			 backgroundColor: '#000000',
+			 backgroundAlpha: 0.15
+			};
+			chart.dataProvider = chartData;
+			chart.categoryField = "date";
+
+			// listen for "dataUpdated" event (fired when chart is inited) and call zoomChart method when it happens
+			chart.addListener("dataUpdated", zoomChart);
+
+			// AXES
+			// category                
+			var categoryAxis = chart.categoryAxis;
+			categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+			categoryAxis.minPeriod = "DD"; // our data is daily, so we set minPeriod to DD
+			categoryAxis.dashLength = 2;
+			categoryAxis.gridAlpha = 0.15;
+			categoryAxis.axisColor = "#DADADA";
+
+			// first value axis (on the left)
+			var valueAxis1 = new AmCharts.ValueAxis();
+			valueAxis1.axisColor = "#FF6600";
+			valueAxis1.axisThickness = 2;
+			valueAxis1.gridAlpha = 0;
+			valueAxis1.duration = "DD";
+			valueAxis1.durationUnits = {
+			 DD: "%",
+			 hh: "%",
+			 mm: "%",
+			 ss: "%"
+			};
+			chart.addValueAxis(valueAxis1);
+
+			// GRAPHS
+			// first graph
+			var graph1 = new AmCharts.AmGraph();
+			graph1.valueAxis = valueAxis1; // we have to indicate which value axis should be used
+			graph1.title = $("#date").val();
+			graph1.valueField = "visits";
+			graph1.bullet = "round";
+			graph1.hideBulletsCount = 30;
+			chart.addGraph(graph1);
+
+			// CURSOR
+			var chartCursor = new AmCharts.ChartCursor();
+			chartCursor.cursorPosition = "mouse";
+			chart.addChartCursor(chartCursor);
+
+			// SCROLLBAR
+			var chartScrollbar = new AmCharts.ChartScrollbar();
+			chart.addChartScrollbar(chartScrollbar);
+
+			// LEGEND
+			var legend = new AmCharts.AmLegend();
+			legend.marginLeft = 110;
+			chart.addLegend(legend);
+
+			// WRITE
+			chart.write("doublediv");
+		},
+		
+		//显示月活跃用户
+		showMonth : function() {
+			$.ajax({
+				type : 'get',
+				url : '<{$logicApp}>/useractive/getMonthStat',
+				dataType : 'json',
+
+				data : {
+					ip : $("#sip").val(),
+					date : $("#date").val()
+				},
+				beforeSend : function() {
+					$("#mbody").html("<tr><td colspan='12'><img src=\"<{$res}>/images/loading.gif\"/></td></tr>");
+				},
+				success : function(data) {
+					if(typeof(data.list) != 'undefined') {
+						var list = data.list;
+						var body = "<tr>";
+						for(var i in list) {
+							body += "<td>" + list[i] +"</td>";
+						}
+						body += "</tr>";
+						$("#mbody").html(body);
+						$("#mbody").data('month', list);
+						flag = false;
+					}else{
+						$("#mbody").html("<tr><td colspan='12'>没有记录！</td></tr>");
+					}
+				},
+				error :  function() {
+					$("#mbody").html("<tr><td colspan='12'>没有记录！</td></tr>");
+				}
+			})
+		}	
+		
+	}
+
+	$(document).ready(function(){
+		user_active.INIT();
+	})
+	
+</script>
+</body>
+</html>

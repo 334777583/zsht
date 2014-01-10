@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>数据库备份</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+<script src="<{$res}>/js/function.js" type="text/javascript"></script>
+<style type="text/css">
+<!-- 
+    .mytable td { 
+    	font-size: 15px; 
+    } 
+	
+	body {
+		font-size: 15px; 
+	}
+-->
+</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、此页面用于数据库备份配置</td>
+						</tr>
+					</tbody>
+				</table>
+				<hr/>
+			</div>
+			
+			<form id="form" action="" method="POST">
+			<div id="select_db">
+				<span>数据库选择：</span>
+				<select name="s_db">
+					<{foreach  from=$db item=item key=key}>
+						<option value="<{$key}>"><{$item}></option>
+					<{/foreach}>
+				</select>
+			</div>
+			
+			<div class="section">
+				<h3>导出类型</h3>
+				<input type="radio" name="r_group" value='1' checked="checked"/><span>导出表结构和数据</span>
+				<input type="radio" name="r_group" value='0'/><span>导出表结构</span>
+			</div>
+			
+			<div class="section">
+				<h3>导出方式</h3>
+				<input type="radio" name="s_group" value='1' checked="checked"/><span>直接下载</span>
+				<input type="radio" name="s_group" value='2'/><span>备份到服务器</span>
+			</div>
+			
+			<div class="section">
+				<h3><span class="point">高级选项<img src="<{$res}>/images/b_tblops.png"/></span></h3>
+				<div style="display:none" id="detail">	
+					<table border='0' cellspacing = "0" cellpadding="0">
+						<tbody>
+							<tr>
+								<td>主机名或者IP地址:</td>
+								<td><input type="text" value="127.0.0.1" id="address" name="address"/></td>
+							<tr>
+							<tr>
+								<td>端口:</td>
+								<td><input type="text" value="3306" id="port" name="port"/></td>
+							<tr>
+							<tr>
+								<td>用户名:</td>
+								<td><input type="text" value="root" id="username" name="username"/></td>
+							<tr>
+							<tr>
+								<td>密码:</td>
+								<td><input type="password" id="password" name="password"/></td>
+							<tr>
+							<tr>
+								<td>数据库:</td>
+								<td><input type="text" id="database" name="database"/></td>
+							<tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			</form>
+			
+			<div class="section"><input id="execute" type="button" value="执行"/></div>
+			
+			<div class="section">
+				<h3>数据库备份历史记录</h3>
+				<table border='0' cellspacing = "0" cellpadding="0" style="width:50%" class="mytable">
+					<thead>
+						<tr>
+							<th>IP地址</th>
+							<th>名称</th>
+							<th>类型</th>
+							<th>大小</th>
+							<th>生成日期</th>
+							<th>操作</th>
+						<tr>
+					</thead>
+					<tbody>
+						<{if $backup}>
+							<{foreach from=$backup item=item}>
+								<tr>
+									<td><{$item.b_ip}></td>
+									<td class="f_name"><a href="<{$app}>/data/download/f/<{$item.b_name}>"><{$item.b_name}></a></td>
+									<td>
+										<{if $item.b_type eq 0}>
+											导出结构
+										<{else}>
+											导出表结构和数据
+										<{/if}>
+									</td>
+									<td><{$item.b_size}></td>
+									<td><{$item.b_time}></td>
+									<td><a href="javascript:void(0)" class="del_file" rel="<{$item.b_id}>">删除</a></td>
+								</tr>
+							<{/foreach}>
+						<{else}>
+							<tr>
+								<td colspan="6">没有记录！</td>
+							</tr>
+						<{/if}>	
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		
+		<!--弹出覆盖层-->
+		<div class="overlay" style="display:none">
+			<table style="width:220px;height:100%;margin:0 auto;">
+				<tr>
+					<td style="text-align:center;vertical-align:middle">
+						<img src='<{$res}>/images/ajax-loader.gif'/>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</div>
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		var data = {
+			INIT : function() {
+				showTitle("其他工具:数据库备份");
+			
+				//高级选项
+				$(".point").click(function(){
+					if($("#detail").css("display") == "none" ) {
+						$("#detail").css("display","block");
+						$("#select_db").css("display","none");
+					} else {
+						$("#detail").css("display","none");
+						$("#select_db").css("display","block");
+					}
+				})
+				
+				//执行
+				$("#execute").click(function(){
+					if($("#select_db").css("display") != "none") {
+						$("#form").attr("action","<{$app}>/data/backup");
+						$("#form").submit();
+					}
+					
+					if($("#detail").css("display") != "none" ) {
+						if($("#address").val() == "" || $("#port").val() == "" || $("#username").val() == "" || $("#database").val() == "") {
+							alert("请补全数据库信息！");
+							return false;
+						}
+						$("#form").attr("action","<{$app}>/data/backupByconf");
+						$("#form").submit();	
+					}
+					
+				})
+				
+				
+				//删除文件
+				$(".del_file").click(function() {
+					var filename = $(this).closest("tr").find(".f_name").text();
+					var id =  $(this).attr("rel");
+					$.ajax({
+						'type' : 'POST',
+						url : '<{$app}>/data/delete',
+						dataType : 'json',
+						data : {
+							filename : filename,
+							id : id
+						},
+						beforeSend : function(){
+							$(".overlay").show();
+						},
+						complete : function(){
+							$(".overlay").hide();
+						},
+						success : function (data) {
+							if(data == "success") {
+								alert("删除成功");
+								window.location.reload();
+							} else if(data == "error") {
+								alert("删除失败！");
+							}
+						},
+						error : function () {
+							alert("删除失败！");
+						}
+					})
+				})			
+			}
+		}
+		
+		
+		$(document).ready(function(){
+			data.INIT();
+		})
+	</script>
+</body>
+</html>

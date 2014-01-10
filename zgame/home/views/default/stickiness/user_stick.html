@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>活跃粘性</title>
+<meta http-equiv="Content-Type" content="text/html; chartset=utf-8" />
+<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+<!--
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #EEF2FB;
+}
+-->
+</style>
+</head>
+<body>
+	<div>
+		<div  id="user-tabs"  style="margin-top:20px;">
+			<span id="1"  class="user-gray">双周留存</span>
+			<span id="2">活跃粘性</span>
+			<hr/>
+		</div>
+		
+		<div id="tabs-2" class="tabitem">
+			<div class="toptitle">
+				<span>用户数据分析:活跃粘性</span>
+			</div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody>
+						<tr>
+							<td width="5%"  class="tableleft">说明：</td>
+							<td width="95%" class="tableleft">1、XXXXXXX</td>
+						</tr>
+						<tr>
+							<td width="5%" class="tableleft">&nbsp;</td>
+							<td width="95%" class="tableleft">2、XXXXXXX</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="topinfo">
+				<div>
+					<span>服务器:</span>
+					<select id="sip">
+						<{foreach from=$ipList item=ip}>
+							<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+						<{/foreach}>
+					</select>
+					<input type="radio" name="rtype" value="1" checked='checked'/><span>开服时间至</span><input type="text" class="input1" id="finshdate"/>
+					<input type="radio" name="rtype" value="2"/><span>选择区间</span>
+					<span id="section" style="display:none">
+						<input type="text" class="input1" id="startdate"/>至<input type="text" class="input1" id="enddate"/>
+					</span>	
+					<input type="button" value="查询" id="querybtn" style="margin-left:20px"/>
+				</div>
+			</div>	
+				
+			<div>	
+				<div>
+					<table  class="mytable" cellspacing="0" align="center" id="dtable">
+						<thead>
+							<tr>
+								<th>服务器</th>
+								<th>日期</th>
+								<th>新增用户</th>
+								<th>日活跃用户</th>
+								<th>月活跃用户</th>
+								<th>DAU/MAU</th>
+								<th>累计活跃用户</th>
+								<th>活跃率</th>
+							</tr>
+						</thead>
+						<tbody id="dtatr">
+							<tr>
+								<td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+								<td>300</td>
+								<td>56465465</td><td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+							</tr>
+							<tr>
+								<td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+								<td>300</td>
+								<td>56465465</td><td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+							</tr>
+							<tr>
+								<td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+								<td>300</td>
+								<td>56465465</td><td>2013-05-06</td>
+								<td>1000</td>
+								<td>200</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<div id="first_div" style="width: 99%; height: 400px;" class="table_blue2"></div><br/>
+				<div id="second_div" style="width: 99%; height: 400px;" class="table_blue2"></div>
+			</div>
+		</div>
+	</div>
+	
+<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script> 
+<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+<script src="<{$res}>/js/function.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var user_stick = {
+		INIT : function() {
+			var self = this;
+
+			//时间插件
+			$("#startdate").datepicker();
+			$("#enddate").datepicker();
+			$("#finshdate").datepicker();
+		
+			//切换标签
+			$("#user-tabs span").click(function(){
+				window.location = "<{$app}>/useractive/show/pageId/"+this.id;
+			});
+			
+			//切换时间选择
+			$("input[name=rtype]").click(function(){
+				var id = $(this).val();
+				if(id == '1') {
+					$("#section").hide();
+					$("#finshdate").show();
+				}else{
+					$("#section").show();
+					$("#finshdate").hide();
+				}
+			})
+			
+			var data = generateChartData();
+			var data2 = generateChartData2();
+			self.showActiveChart(data, "first_div", '新增用户趋势', '活跃用户趋势', 'DD');
+			self.showActiveChart(data2, "second_div", '月活跃用户趋势', '生命趋势', 'MM');
+			
+			//查询
+			$("#querybtn").click(function(){
+				var ip = $("#sip").val();
+				var finshdate = '';
+				var startdate = '';
+				var enddate = '';
+				var type =	$("input[name=rtype]:checked").val();
+				if(type == '1'){
+					var finshdate = $("#finshdate").val();
+				
+				}else if(type == '2'){
+					var startdate = $("#startdate").val();
+					var enddate = $("#enddate").val();
+				}
+				
+				$.ajax({
+					type : 'get',
+					url : '<{$logicApp}>/useractive/getStick',
+					dataType : 'json',
+					data : {
+						ip : ip,
+						finshdate : finshdate,
+						startdate : startdate,
+						enddate : enddate
+					},
+					success : function(data) {
+					},
+					error :  function(){
+						alert('error');
+					}
+				})
+				
+			});
+			
+		},
+		
+		//显示活跃粘性
+		showActiveChart : function(chartData, position, title1, title2, type) {
+			var chart;	
+
+			// this method is called when chart is first inited as we listen for "dataUpdated" event
+			function zoomChart() {
+			 // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+			 chart.zoomToIndexes(0, 15);
+			}
+
+			// SERIAL CHART    
+			chart = new AmCharts.AmSerialChart();
+			chart.pathToImages = "<{$res}>/images/";
+			chart.zoomOutButton = {
+				backgroundColor: '#000000',
+				backgroundAlpha: 0.15
+			};
+			chart.dataProvider = chartData;
+			chart.categoryField = "date";
+
+			// listen for "dataUpdated" event (fired when chart is inited) and call zoomChart method when it happens
+			chart.addListener("dataUpdated", zoomChart);
+
+			// AXES
+			// category                
+			var categoryAxis = chart.categoryAxis;
+			categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+			categoryAxis.minPeriod = type; // our data is daily, so we set minPeriod to DD
+			categoryAxis.dashLength = 2;
+			categoryAxis.gridAlpha = 0.15;
+			categoryAxis.axisColor = "#DADADA";
+
+			// first value axis (on the left)
+			var valueAxis1 = new AmCharts.ValueAxis();
+			valueAxis1.axisColor = "#FF6600";
+			valueAxis1.axisThickness = 2;
+			valueAxis1.gridAlpha = 0;
+			chart.addValueAxis(valueAxis1);
+			
+			 // second value axis (on the right) 
+			var valueAxis2 = new AmCharts.ValueAxis();
+			valueAxis2.offset = 50; // this line makes the axis to appear detached from plot area
+			valueAxis2.gridAlpha = 0;
+			valueAxis2.axisColor = "#FCD202";
+			valueAxis2.axisThickness = 2;
+			chart.addValueAxis(valueAxis2);
+
+			// GRAPHS
+			// first graph
+			var graph1 = new AmCharts.AmGraph();
+			graph1.valueAxis = valueAxis1; // we have to indicate which value axis should be used
+			graph1.title = title1;
+			graph1.valueField = "visits";
+			graph1.bullet = "round";
+			graph1.hideBulletsCount = 30;
+			chart.addGraph(graph1);
+			
+			// second graph                
+			var graph2 = new AmCharts.AmGraph();
+			graph2.valueAxis = valueAxis2; // we have to indicate which value axis should be used
+			graph2.title = title2;
+			graph2.valueField = "hits";
+			graph2.bullet = "square";
+			graph2.hideBulletsCount = 30;
+			chart.addGraph(graph2);
+
+			// CURSOR
+			var chartCursor = new AmCharts.ChartCursor();
+			chartCursor.cursorPosition = "mouse";
+			chart.addChartCursor(chartCursor);
+
+			// SCROLLBAR
+			var chartScrollbar = new AmCharts.ChartScrollbar();
+			chart.addChartScrollbar(chartScrollbar);
+
+			// LEGEND
+			var legend = new AmCharts.AmLegend();
+			legend.marginLeft = 110;
+			chart.addLegend(legend);
+
+			// WRITE
+			chart.write(position);
+		}
+	}
+	
+	// generate some random data, quite different range
+	function generateChartData() {
+		var chartData = [];
+		var firstDate = new Date();
+		firstDate.setDate(firstDate.getDate() - 50);
+
+		for (var i = 0; i < 50; i++) {
+			var newDate = new Date(firstDate);
+			newDate.setDate(newDate.getDate() + i);
+
+			var visits = Math.round(Math.random() * 40) + 100;
+			var hits = Math.round(Math.random() * 80) + 500;
+
+			chartData.push({
+				date: newDate,
+				visits: visits,
+				hits: hits
+			});
+		}
+		
+		return chartData;
+	}
+	
+	// generate some random data, quite different range
+	function generateChartData2() {
+		var chartData = [];
+		var firstDate = new Date();
+		firstDate.setMonth(firstDate.getMonth() - 10);
+
+		for (var i = 0; i < 10; i++) {
+			var newDate = new Date(firstDate);
+			newDate.setMonth(newDate.getMonth() + i);
+
+			var visits = Math.round(Math.random() * 40) + 100;
+			var hits = Math.round(Math.random() * 80) + 500;
+
+			chartData.push({
+				date: newDate,
+				visits: visits,
+				hits: hits
+			});
+		}
+		
+		return chartData;
+	}
+
+	$(document).ready(function(){
+		user_stick.INIT();
+	})
+	
+</script>
+</body>
+</html>

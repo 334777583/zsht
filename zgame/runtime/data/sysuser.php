@@ -1,0 +1,1 @@
+<?php {"pri":"u_id","0":"u_name","1":"u_password","2":"g_id","3":"u_realname","4":"u_phone","5":"u_email","6":"u_flag","7":"u_createtime","8":"u_updatetime"}yes

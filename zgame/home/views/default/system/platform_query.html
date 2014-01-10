@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>平台记录查询</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link href="<{$res}>/css/skin.css" rel="stylesheet" type="text/css">
+	<link href="<{$res}>/css/jquery-ui.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	<!--
+	body {
+		margin-left: 0px;
+		margin-top: 0px;
+		margin-right: 0px;
+		margin-bottom: 0px;
+		background-color: #EEF2FB;
+		font-size: 12px;
+	}
+	-->
+	</style>
+</head>
+<body>
+	<div>
+		<div>
+			<div>
+				<table class="explain">
+					<thead>
+					</thead>
+					<tbody style="font-family:Mingliu">
+						<tr>
+							<td width="5%"  class="tableleft"><b>说明：</b></td>
+						</tr>
+						<tr>
+							<td width="95%" class="tableleft">1、此页面用于平台登录历史记录查询</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			
+			<div class="topinfo">
+				<div>
+					<label>
+						<span>服务器:</span>
+						<select id="sip">
+							<{foreach from=$ipList item=ip}>
+								<option value="<{$ip.s_id}>"><{$ip.s_name}></option>
+							<{/foreach}>
+						</select>
+					</label>
+					
+					<label>
+						<span>概况:</span>
+						<select id="info"></select>
+					</label>
+					
+					<input type="button" value="查询" id="querybtn"/>
+				</div>
+			</div>
+			
+			<div style="clear:both"></div>
+			
+			<div id="tabs-1" class="tabitem">	
+				<div>
+					<table  class="mytable" cellspacing="0" align="center" id="dtable">
+						<thead>
+							<tr>
+								<th>账号</th>
+								<th>IP</th>
+								<th>服数</th>
+								<th>概况</th>
+								<th>日期</th>
+							</tr>
+						</thead>
+						<tbody id="dtatr_body">
+						
+						</tbody>
+					</table>
+				</div>
+				
+				<div id="pagehtml" style="float:right;margin-right:20px;display:none"></div>
+				<div id="example_length" class="dataTables_length" style="display:none">
+					<label>每页显示
+						<select id="menu" name="example_length" size="1" aria-controls="example">
+						<option value="50" selected="selected">50</option>
+						<option value="100" >100</option>
+						<option value="200">200</option>
+						<option value="500">500</option>
+						</select> 条记录
+					</label>
+				</div>
+				
+			</div>
+			
+			<div style="clear:both"></div>
+		</div>
+
+	</div>
+	
+	
+	<script src="<{$res}>/js/jquery.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/jquery-ui.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/amcharts.js" type="text/javascript"></script>
+	<script src="<{$res}>/js/function.js" type="text/javascript"></script> 	
+	<script type="text/javascript">
+		var flag = 1;	//标记概况，主要不进行2次查询
+		var platform_query = {
+			INIT : function(){
+				var self = this;
+				
+				showTitle("其他工具:平台记录");
+				page.listen();
+				
+				self.showRecords(1);
+				
+				
+				$("#querybtn").bind('click', function(){
+					self.showRecords(1);
+				});
+				
+				$("#sip").change(function(){
+					flag = 1;
+					$("#info").html("");
+				});
+				
+				//每页显示
+				$("#menu").change(function(){
+					self.showRecords(1);
+				});
+			},
+			
+			showRecords : function(page) {
+				var des = $("#info option:selected").text();
+				des = (des == "全部" ? "":des);
+				$.ajax({
+					'type' : 'GET',
+					url : '<{$logicApp}>/platformquery/getRecords',
+					dataType : 'json',
+					data : {
+						ip : $("#sip").val(),
+						des : des,
+						flag : flag,
+						pageSize : $("#menu").val(),
+						curPage : page
+					},
+					beforeSend : function() {
+						$("#dtatr_body").html("<tr><td colspan='6'><img src='<{$res}>/images/loading.gif'/></td></tr>");
+					},
+					success : function (data) {
+						if(typeof(data.result) != 'undefined' && data.result != "") {
+							var result = data.result;
+							$("#pagehtml,#example_length").show();
+							$("#pagehtml").html(data.pageHtml);		//分页
+							var fields = ['p_account', 'p_ip', 'p_ser', 'p_decript', 'p_time'];
+							var tbody = '';
+							for(var i in result) {
+								tbody += "<tr>";
+								for(var k in fields) {
+									tbody += "<td>" + result[i][fields[k]] + "</td>";
+								}
+								tbody += "</tr>";
+							}
+							$("#dtatr_body").html(tbody);
+
+							/*
+							$("#pagehtml").show();
+							var fields = ['p_account', 'p_ip', 'p_ser', 'p_decript', 'p_time'];
+							page.INIT(50, result, fields, '#dtatr_body');
+							$("#home_page").trigger('click');*/
+							
+							//初始化概况选择条件
+							if($("#info").html() == "") {
+								var option = data.option;
+								var select = "<option>全部</option>";
+								for(var i in option) {
+									select += "<option >" + option[i]["p_decript"] + "</option>";
+								}
+								$("#info").html(select);
+							}
+							flag = 0;
+						}else {
+							$("#export_div,#example_length").hide();
+							//$("#pagehtml").hide();
+							$("#dtatr_body").html("<tr><td colspan='6'>没有数据！</td></tr>");
+						}
+					},
+					error : function () {
+						$("#export_div,#example_length").hide();
+						//$("#pagehtml").hide();
+						$("#dtatr_body").html("<tr><td colspan='6'>没有数据！</td></tr>");
+					}
+				})
+			}
+
+		}
+		
+		
+		$(document).ready(function(){
+			platform_query.INIT();
+		})
+		
+		//跳到相应页面 
+		var go = function(){
+			var pagenum = $("#page").val();
+			if(pagenum=='' || isNaN(pagenum) || pagenum <= 0){
+				alert('请输入一个正整数！');
+				$("#page").val(1);
+			}else{
+				platform_query.showRecords(pagenum);
+			}
+		}
+		
+		//分页ajax函数
+		var formAjax = function(page){
+			platform_query.showRecords(page);
+		}
+	
+	</script>
+</body>
+</html>
