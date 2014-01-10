@@ -98,9 +98,9 @@ class gmoperate{
 		
 		global $gm_db;
 		$temp = array();
-		$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
-		// global $t_conf;  //压测服
-		// $point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+		global $t_conf;  //压测服
+		$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
 		
 		foreach($rolename as $key => $name){
 			$arr['cmd'] = 'forbidchat';
@@ -160,9 +160,13 @@ class gmoperate{
 				$str .= $val['s_uid'].',';
 			}
 			$str = rtrim($str ,',');
-			$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			global $t_conf;  //压测服
+			$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		
 			$arr_result = $point -> table('php_cmd') -> where('id in ('.$str.') AND stype=4') -> select();
 			$point -> table('php_cmd') -> where('id in ('.$str.') AND stype=4 AND bhandled != 0 and phandled = 0') -> update(array('phandled' => 1));
+			
 			$fail = array();
 			$succ = '';
 			if(!empty($arr_result) && count($arr_result) > 0){
@@ -214,7 +218,10 @@ class gmoperate{
 				$str .= $val['f_uid'].',';
 			}
 			$str = rtrim($str ,',');
-			$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			global $t_conf;  //压测服
+			$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		
 			$arr_result = $point -> table('php_cmd') -> where('id in ('.$str.') AND stype=1') -> select();
 			$point -> table('php_cmd') -> where('id in ('.$str.') AND stype=1 AND bhandled != 0 and phandled = 0') -> update(array('phandled' => 1));
 
@@ -269,7 +276,10 @@ class gmoperate{
 				$str .= $val['f_uid'].',';
 			}
 			$str = rtrim($str ,',');
-			$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+			global $t_conf;  //压测服
+			$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		
 			$arr_result = $point -> table('php_cmd') -> where('id in ('.$str.') AND stype=2') -> select();
 			$point -> table('php_cmd') -> where('id in ('.$str.') AND stype=2 AND bhandled != 0 and phandled = 0') -> update(array('phandled' => 1));
 
@@ -349,9 +359,9 @@ class gmoperate{
 
 		global $gm_db;
 		$temp = array();
-		$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
-		// global $t_conf;  //压测服
-		// $point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+		global $t_conf;  //压测服
+		$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
 		
 		foreach($rolename as $key => $name){
 			$arr['cmd'] = 'forbidchat';
@@ -403,9 +413,9 @@ class gmoperate{
 
 		global $gm_db;
 		$temp = array();
-		$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
-		// global $t_conf;
-		// $point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+		global $t_conf;
+		$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
 		if(!$point){
 			echo json_encode(array(
 				'error' => '数据库连接失败！'
@@ -459,9 +469,9 @@ class gmoperate{
 
 		global $gm_db;
 		$temp = array();
-		$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
-		// global $t_conf;  //压测服
-		// $point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+		global $t_conf;  //压测服
+		$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
 		if(!$point){
 			echo json_encode(array(
 				'error' => '数据库连接失败！'
@@ -534,9 +544,9 @@ class gmoperate{
 
 		global $gm_db;
 		$temp = array();
-		$point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
-		// global $t_conf;  //压测服
-		// $point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
+		// $point = F($gm_db['db'], $gm_db['ip'], $gm_db['user'], $gm_db['password']);
+		global $t_conf;  //压测服
+		$point = F($t_conf['zs']['db'], $t_conf['zs']['ip'], $t_conf['zs']['user'], $t_conf['zs']['password'], $t_conf['zs']['port']);
 		
 		foreach($rolename as $key => $name){
 			$arr['cmd'] = 'kickplayer';
